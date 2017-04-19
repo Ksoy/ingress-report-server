@@ -1,26 +1,43 @@
 import json
 
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.template import loader
 
 from .models import SpoofAgent, Report
 
 # Create your views here.
-def index(request):
-    return render(request, 'index.html') # HttpResponse("Hello, world. You're at the polls index.")
+def home_page(request):
+    return render(request, 'home.html') # HttpResponse("Hello, world. You're at the polls index.")
 
-def detail(request, question_id):
-    return HttpResponse("You're looking at question %s." % question_id)
+def login_page(request, fail=False):
+    return render(request, 'login.html', {'login_fail': fail})
 
-######################################################################
-
-def admin(request):
+@login_required(login_url='/reports/v1/login')
+def manage_page(request):
     """Report management page."""
-    pass
+    return render(request, 'manage.html')
 
-def list(request):
+def api_login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return redirect('reports:manage_page')
+    else:
+        return redirect('reports:login_page')
+        
+    #print([k for k in request.GET.keys()])
+
+def api_logout(request):
+    logout(request)
+    return redirect('reports:home_page')
+
+def api_list(request):
     """Reutn all report information."""
     data = {
         'reports': []
@@ -31,7 +48,7 @@ def list(request):
             'description': report.description,
             'bad_agents': [],
             'inappropriate_type': report.inappropriate_type,
-            'file_link': '/reports/files/{}'.format(report.report_file.name),
+            'file_link': '/reports/v1/files/{}.zip'.format(report.report_file.name),
         }
         for bad_agent in SpoofAgent.objects.filter(report=report):
             ba = {
@@ -41,8 +58,6 @@ def list(request):
             r['bad_agents'].append(ba)
 
         data['reports'].append(r)
-
-    print(data)
 	
     return HttpResponse(json.dumps(data))
 
@@ -50,17 +65,17 @@ def list_page(request):
     """List all reports page."""
 
     spoof_agent_list = SpoofAgent.objects.all()
-    data = serializers.serialize("json", SpoofAgent.objects.filter(report_id=1))
-    print(data)
+    #data = serializers.serialize("json", SpoofAgent.objects.filter(report_id=1))
     context = {
-        'spoof_agent_list': spoof_agent_list,
+        'bad_agent_list': spoof_agent_list,
     }
     
     return render(request, 'list.html', context)
 
-def record(request):
+
+def api_record(request):
     """Record agent report spoofagent history."""
-    pass
+    return HttpResponse('ok')
 
 def create_report(request):
     """Create new report by admin."""

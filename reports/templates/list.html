@@ -1,11 +1,34 @@
+{% extends "header.html" %}
 
-{% if spoof_agent_list %}
-  <ul>
-  {% for spoof_agent in spoof_agent_list %}
-    <li>{{spoof_agent.name}}</li>
-  {% endfor %}
-  </ul>
-{% else %}
-  <p> No spoof_agent </p>
-{% endif %}
+{% block content %}
+<div class="row">
+<div class="col-md-10 col-md-offset-1">
+<div class="panel panel-default">
+  <div class="panel-heading">Bad Agents...</div>
 
+  {% if bad_agent_list %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>name</th>
+          <th>status</th>
+        </tr>
+      </thead>
+    {% for bad_agent in bad_agent_list %}
+      <tr>
+        <td>{{bad_agent.id}}</td>
+        <td>{{bad_agent.name}}</td>
+        <td>{{bad_agent.status}}</td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% else %}
+    <div class="panel-body">
+      <p> No spoof_agent </p>
+    </div>
+  {% endif %}
+</div>
+</div>
+</div>
+{% endblock %}
