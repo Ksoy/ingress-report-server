@@ -4,6 +4,7 @@ from django.utils import timezone
 
 class ReportFile(models.Model):
     name = models.CharField(max_length=20)
+    ori_name = models.CharField(max_length=50)
     upload_time = models.DateTimeField('date uploaded', editable=False)
 
     def save(self, *args, **kwargs):
