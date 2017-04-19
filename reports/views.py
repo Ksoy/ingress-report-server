@@ -34,7 +34,11 @@ def list(request):
             'file_link': '/reports/files/{}'.format(report.report_file.name),
         }
         for bad_agent in SpoofAgent.objects.filter(report=report):
-            r['bad_agents'].append(bad_agent.name)
+            ba = {
+                'name': bad_agent.name,
+                'status': bad_agent.status,
+            }
+            r['bad_agents'].append(ba)
 
         data['reports'].append(r)
 
