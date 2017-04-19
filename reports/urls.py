@@ -16,7 +16,7 @@ urlpatterns = [
     url(r'^v1/logout$', logout, name='logout_page'),
 
     url(r'^v1/api/list$', views.api_list, name='list'),
-    url(r'^v1/api/record$', views.api_record, name='record'),
+    url(r'^v1/api/record/(?P<user>[a-zA-Z0-9]+)/(?P<report>[a-zA-Z0-9]+)$', views.api_record, name='record'),
 ] + static('/v1' + settings.STATIC_URL, document_root=app_name + settings.STATIC_ROOT) \
 + static('/v1/files/', document_root=app_name + '/files/')
 

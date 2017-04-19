@@ -47,7 +47,7 @@ class Agent(models.Model):
 
 class ReportRecord(models.Model):
     agent = models.ForeignKey(Agent)
-    spoofAgent = models.ForeignKey(SpoofAgent)
+    spoof_agent = models.ForeignKey(SpoofAgent)
     report_time = models.DateTimeField(editable=False)
 
     def save(self, *args, **kwargs):

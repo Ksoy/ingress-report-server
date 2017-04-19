@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template import loader
 
-from .models import SpoofAgent, Report
+from .models import SpoofAgent, Report, ReportRecord, Agent
 
 # Create your views here.
 def home_page(request):
@@ -54,8 +54,16 @@ def list_page(request):
     return render(request, 'list.html', context)
 
 
-def api_record(request):
+def api_record(request, user, report):
     """Record agent report spoofagent history."""
+    try:
+        agent = Agent.objects.filter(name=user)
+        spoof_agent = SpoofAgent.objects.filter(name=report)
+        report_record = ReportRecord(agent=agent[0], spoof_agent=spoof_agent[0])
+        report_record.save()
+    except:
+        return HttpResponse('false')
+
     return HttpResponse('ok')
 
 def create_report(request):
