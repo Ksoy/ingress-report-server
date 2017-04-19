@@ -13,29 +13,10 @@ from .models import SpoofAgent, Report
 def home_page(request):
     return render(request, 'home.html') # HttpResponse("Hello, world. You're at the polls index.")
 
-def login_page(request, fail=False):
-    return render(request, 'login.html', {'login_fail': fail})
-
 @login_required(login_url='/reports/v1/login')
 def manage_page(request):
     """Report management page."""
     return render(request, 'manage.html')
-
-def api_login(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return redirect('reports:manage_page')
-    else:
-        return redirect('reports:login_page')
-        
-    #print([k for k in request.GET.keys()])
-
-def api_logout(request):
-    logout(request)
-    return redirect('reports:home_page')
 
 def api_list(request):
     """Reutn all report information."""

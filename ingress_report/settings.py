@@ -124,3 +124,4 @@ STATIC_URL = '/static/'
 STATIC_ROOT = '/static/'
 
 CORS_ORIGIN_ALLOW_ALL = True
+LOGIN_REDIRECT_URL = '/reports/v1/manage'

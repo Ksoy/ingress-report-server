@@ -19,7 +19,7 @@
     {% if user.is_anonymous %}
       <li><a href="{% url 'reports:login_page' %}">login</a></li>
     {% else %}
-      <li><a href="{% url 'reports:logout' %}">logout</a></li>
+      <li><a href="{% url 'reports:logout_page' %}?next={% url 'reports:home_page' %}">logout</a></li>
     {% endif %}
   </ul>
 </div>
