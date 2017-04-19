@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [ "*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'reports.apps.ReportsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -120,3 +122,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = '/static/'
+
+CORS_ORIGIN_ALLOW_ALL = True
