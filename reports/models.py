@@ -3,7 +3,7 @@ from django.utils import timezone
 
 
 class ReportFile(models.Model):
-    name = models.CharField(length=20)
+    name = models.CharField(max_length=20)
     upload_time = models.DateTimeField('date uploaded', editable=False)
 
     def save(self, *args, **kwargs):
@@ -15,19 +15,31 @@ class ReportFile(models.Model):
 
 class Report(models.Model):
     INAPPROPRIATE_TYPE_CHOICES = (
-        ('ma', 'abuse_ma'),
-        ('sell', 'abuse_sell'),
-        ('cheat', 'abuse_cheat')
+        ('abuse_ma', 'abuse_ma'),
+        ('abuse_sell', 'abuse_sell'),
+        ('abuse_cheat', 'abuse_cheat')
+    )
+
+    STATUS_CHOICES = (
+        ('new', 'new'),
+        ('close', 'close'),
     )
 
     subject = models.CharField(max_length=150)
     description = models.TextField()
-    inappropriate_type = models.CharField(choices=INAPPROPRIATE_TYPE_CHOICES, default=FRESHMAN)
+    inappropriate_type = models.CharField(max_length=20, choices=INAPPROPRIATE_TYPE_CHOICES)
     report_file = models.ForeignKey(ReportFile)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
 
 class SpoofAgent(models.Model):
+    STATUS_CHOICES = (
+        ('new', 'new'),
+        ('burned', 'burned'),
+    )
+
     name = models.CharField(max_length=200)
     report = models.ForeignKey(Report)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
 
 class Agent(models.Model):
     name = models.CharField(max_length=200)    
@@ -43,13 +55,3 @@ class ReportRecord(models.Model):
             self.report_time = timezone.now()
         return super(ReportRecord, self).save(*args, **kwargs)
 
-# Create your models here.
-class Question(models.Model):
-    question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
-
-
-class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)

@@ -1,0 +1,11 @@
+
+{% if spoof_agent_list %}
+  <ul>
+  {% for spoof_agent in spoof_agent_list %}
+    <li>{{spoof_agent.name}}</li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p> No spoof_agent </p>
+{% endif %}
+

@@ -2,7 +2,7 @@ db.sqlite3
 reports/static/app.js
 reports/node_modules
 reports/migrations
-files/*
+reports/files/*
 venv/*
 *.pyc
 *.swp
