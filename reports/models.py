@@ -1,9 +1,15 @@
 from django.db import models
 from django.utils import timezone
+import uuid
+import os
 
+def user_directory_path(instance, filename):
+    instance.ori_name = filename
+    _, ext = os.path.splitext(filename)
+    return 'files/{}{}'.format(str(uuid.uuid4()), ext)
 
 class ReportFile(models.Model):
-    name = models.CharField(max_length=20)
+    upload_file = models.FileField(upload_to=user_directory_path)
     ori_name = models.CharField(max_length=50)
     upload_time = models.DateTimeField('date uploaded', editable=False)
 
@@ -49,6 +55,7 @@ class ReportRecord(models.Model):
     agent = models.ForeignKey(Agent)
     spoof_agent = models.ForeignKey(SpoofAgent)
     report_time = models.DateTimeField(editable=False)
+    numbers = 0
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''

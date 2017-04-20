@@ -1,0 +1,12 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<form action="api/upload" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    Select file to upload:
+    <input type="file" name="upload_file" id="upload_file">
+    <input type="submit" value="Upload Image" name="submit">
+</form>
+
+{% endblock %}

@@ -13,6 +13,7 @@
           <th>#</th>
           <th>name</th>
           <th>status</th>
+          <th>report numbers</th>
         </tr>
       </thead>
     {% for bad_agent in bad_agent_list %}
@@ -20,6 +21,7 @@
         <td>{{bad_agent.id}}</td>
         <td>{{bad_agent.name}}</td>
         <td>{{bad_agent.status}}</td>
+        <td>{{bad_agent.numbers}}</td>
       </tr>
     {% endfor %}
     </table>
