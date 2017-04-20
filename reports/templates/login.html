@@ -1,4 +1,4 @@
-{% extends "header.html" %}
+{% extends "index.html" %}
 
 {% block content %}
 
@@ -8,7 +8,7 @@
       <div class="panel-heading" style="text-align:center;">
         <b>Login</b>
       </div>
-      <form method="post" action="api/login" style="margin:0px;">
+      <form id="login" method="post" action="" style="margin:0px;">
         {% csrf_token %}
         <table class="table" style="margin:0px;">
           <tr>
@@ -26,8 +26,8 @@
         </table>
       </form>
     </div>
-    {% if login_fail %}
-    wrong username or password.
+    {% if form.errors %}
+      wrong username or password.
     {% endif %}
   </div>
 </div>

@@ -18,7 +18,18 @@ def manage_page(request):
     """Report management page."""
     return render(request, 'manage.html')
 
-def api_list(request):
+def list_page(request):
+    """List all reports page."""
+
+    spoof_agent_list = SpoofAgent.objects.all()
+    #data = serializers.serialize("json", SpoofAgent.objects.filter(report_id=1))
+    context = {
+        'bad_agent_list': spoof_agent_list,
+    }
+    
+    return render(request, 'list.html', context)
+
+def api_list(request, user):
     """Reutn all report information."""
     data = {
         'reports': []
@@ -32,27 +43,23 @@ def api_list(request):
             'file_link': '/reports/v1/files/{}.zip'.format(report.report_file.name),
         }
         for bad_agent in SpoofAgent.objects.filter(report=report):
+            status = bad_agent.status
+            if status != 'burn':
+                try:
+                    agent = Agent.objects.get(name=user)
+                    record = ReportRecord.objects.get(agent=agent, spoof_agent=bad_agent)
+                    status = 'Done'
+                except:
+                    pass
             ba = {
                 'name': bad_agent.name,
-                'status': bad_agent.status,
+                'status': status,
             }
             r['bad_agents'].append(ba)
 
         data['reports'].append(r)
 	
     return HttpResponse(json.dumps(data))
-
-def list_page(request):
-    """List all reports page."""
-
-    spoof_agent_list = SpoofAgent.objects.all()
-    #data = serializers.serialize("json", SpoofAgent.objects.filter(report_id=1))
-    context = {
-        'bad_agent_list': spoof_agent_list,
-    }
-    
-    return render(request, 'list.html', context)
-
 
 def api_record(request, user, report):
     """Record agent report spoofagent history."""
