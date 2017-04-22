@@ -37,6 +37,7 @@ class Report(models.Model):
     inappropriate_type = models.CharField(max_length=20, choices=INAPPROPRIATE_TYPE_CHOICES)
     report_file = models.ForeignKey(ReportFile)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
+    agents = ''
 
 class SpoofAgent(models.Model):
     STATUS_CHOICES = (

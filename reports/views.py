@@ -18,7 +18,14 @@ def home_page(request):
 @login_required(login_url='/reports/v1/login')
 def manage_page(request):
     """Report management page."""
-    return render(request, 'manage.html')
+    report_list = Report.objects.all()
+    for report in report_list:
+        agents = SpoofAgent.objects.filter(report=report)
+        report.agents = ', '.join([a.name for a in agents])
+    context = {
+        'report_list': report_list,
+    }
+    return render(request, 'manage.html', context)
 
 def list_page(request):
     """List all reports page."""
@@ -33,6 +40,11 @@ def list_page(request):
     }
     
     return render(request, 'list.html', context)
+
+@login_required(login_url='/reports/v1/login')
+def add_report_page(request):
+
+    return render(request, 'add.html')
 
 def upload_page(request):
     return render(request, 'upload.html')
@@ -49,7 +61,7 @@ def api_list(request, user):
             'description': report.description,
             'bad_agents': [],
             'inappropriate_type': report.inappropriate_type,
-            'file_link': '/reports/v1/files/{}'.format(report.report_file.name),
+            'file_link': '/reports/v1/files/{}'.format(report.report_file.upload_file.name),
         }
         for bad_agent in SpoofAgent.objects.filter(report=report):
             status = bad_agent.status
@@ -101,21 +113,35 @@ def api_upload(request):
         return HttpResponse(status=404)
 
     return HttpResponse(ntpath.basename(report_file.upload_file.name))
-    
+   
+def api_add_report(request):
+    if request.method == 'POST':
+        subject = request.POST.get('subject')
+        description = request.POST.get('description')
+        bad_agents = request.POST.get('bad_agents')
+        inappropriate_type = request.POST.get('inappropriate_type')
 
-def create_report(request):
-    """Create new report by admin."""
-    pass
+        upload_file = request.FILES['upload_file']
+        report_file = ReportFile(upload_file=upload_file)
+        report_file.save()
+        handle_uploaded_file(report_file.upload_file.name, upload_file)
 
-def update_report(request):
-    """Update report by admin"""
-    pass
+        report = Report(subject=subject,
+                        description=description,
+                        inappropriate_type=inappropriate_type,
+                        report_file=report_file)
+        report.save()
+        
+        for bad_agent_name in bad_agents.split(','):
+            bad_agent = SpoofAgent(name=bad_agent_name.strip(),
+                                   report=report)
+            bad_agent.save()
 
-def upload(request):
-    """Upload report file."""
-    pass
+        return redirect('reports:manage_page')
+    else:
+        return HttpResponse(status=404)
 
-def download(request, file_name):
-    """Download report file."""
-    pass
+    return HttpResponse(ntpath.basename(report_file.upload_file.name))
+
+    return HttpResponse('ok') 
 

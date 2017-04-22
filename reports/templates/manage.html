@@ -1,10 +1,85 @@
 {% extends 'index.html' %}
 
+{% block user_css %}
+  .show_detail {
+    cursor: pointer;
+  }
+{% endblock %}
+
+{% block user_js %}
+  $(function(){
+    $(".show_detail").click(function(){
+      console.log($(this).children('.glyphicon'));
+      var detail = $((".report_detail[r_id=" + $(this).attr('r_id') + "]"));
+        detail.attr("hidden", !detail.attr("hidden"));
+      if($(this).children('.glyphicon-chevron-down').length) {
+        $(this).children('.glyphicon').removeClass('glyphicon-chevron-down');
+        $(this).children('.glyphicon').addClass('glyphicon-chevron-up');
+      }
+      else {
+        $(this).children('.glyphicon').removeClass('glyphicon-chevron-up');
+        $(this).children('.glyphicon').addClass('glyphicon-chevron-down');
+      }
+    });
+  });
+{% endblock %}
+
 {% block content %}
 
 <div class="row">
   <div class="col-md-10 col-md-offset-1">
-    <H1>Working...<H1>
+    <div class="panel panel-default">
+      <div class="panel-heading" style="text-align:right;">
+        <div class="btn-group">
+          <a href="{% url 'reports:add_report_page' %}">
+            <div class="btn btn-info">Add</div>
+          </a>
+        </div>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th width="10%">#</th>
+            <th>subject</th>
+            <th width="20%">status</th>
+            <th width="10%">detail</th>
+          </tr>
+        </thead>
+        {% for report in report_list %}
+        <tr>
+          <td>{{report.id}}</td>
+          <td>{{report.subject}}</td>
+          <td>{{report.status}}</td>
+          <td class="show_detail" r_id="{{report.id}}"><span class="glyphicon glyphicon-chevron-down"></span></td>
+        </tr>
+        <tr class="report_detail" r_id="{{report.id}}" hidden>
+          <td colspan="4">
+            <table style="width:100%;">
+              <tr>
+                <td width="150px"><label>Subject:</label></td>
+                <td><input style="width:100%;" value="{{report.subject}}" readonly></input></td>
+              </tr>
+              <tr></tr>
+              <tr>
+                <td><label>Description:</label></td>
+                <td><textarea style="width:100%;" rows="10" readonly>{{report.description}}</textarea></td>
+              </tr>
+              <tr></tr>
+              <tr>
+                <td><label>Inappropriate Type:</label></td>
+                <td><input style="width:100%;" value="{{report.inappropriate_type}}" readonly></input></td>
+              </tr>
+              <tr></tr>
+              <tr>
+                <td><label>Agents:</label></td>
+                <td><input style="width:100%;" value="{{report.agents}}" readonly></input></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
   </div>
 </div>
 

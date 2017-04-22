@@ -19,7 +19,7 @@
             <td><label>Password:</label></td>
             <td><input type="password" id="password" name="password"></td>
           </tr>
-          <tr style="height:auto;">
+          <tr>
             <td></td>
             <td><button type="submit">login</button></td>
           </tr>
@@ -27,7 +27,7 @@
       </form>
     </div>
     {% if form.errors %}
-      wrong username or password.
+      <b style="color:red;">Wrong username or password.</b>
     {% endif %}
   </div>
 </div>
