@@ -101,18 +101,6 @@ def handle_uploaded_file(filename, upload_file):
     with open('reports/{}'.format(filename), 'wb+') as destination:
         for chunk in upload_file.chunks():
             destination.write(chunk)
-
-def api_upload(request):
-    if request.method == 'POST':
-        upload_file = request.FILES['upload_file']
-        report_file = ReportFile(upload_file=upload_file)
-        report_file.save()
-        handle_uploaded_file(report_file.upload_file.name, upload_file)
-
-    else:
-        return HttpResponse(status=404)
-
-    return HttpResponse(ntpath.basename(report_file.upload_file.name))
    
 def api_add_report(request):
     if request.method == 'POST':
@@ -142,6 +130,4 @@ def api_add_report(request):
         return HttpResponse(status=404)
 
     return HttpResponse(ntpath.basename(report_file.upload_file.name))
-
-    return HttpResponse('ok') 
 
