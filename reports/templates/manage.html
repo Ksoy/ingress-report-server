@@ -19,11 +19,11 @@
     <label for="inappropriate_type">Inappropriate Type</label>
     <select class="form-control" id="inappropriate_type" name="inappropriate_type">
       <option>-</option>
-      {% for inappropriate_type in INAPPROPRIATE_MAP %}
-        {% if report.inappropriate_type == inappropriate_type.name %}
-          <option value="{{inappropriate_type.name}}" selected>{{inappropriate_type.str}}</option>
+      {% for type, str in INAPPROPRIATE_MAP.items %}
+        {% if report.inappropriate_type == type %}
+          <option value="{{type}}" selected>{{str}}</option>
         {% else %}
-          <option value="{{inappropriate_type.name}}">{{inappropriate_type.str}}</option>
+          <option value="{{type}}">{{str}}</option>
         {% endif %}
       {% endfor %}
     </select>

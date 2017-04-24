@@ -11,11 +11,11 @@ from django.template import loader
 
 from .models import SpoofAgent, Report, ReportRecord, Agent, ReportFile
 
-INAPPROPRIATE_MAP = [
-    {'name': 'abuse_ma', 'str': 'Multiple accounts/account sharing' },
-    {'name': 'abuse_sell', 'str': 'Account buying/selling' },
-    {'name': 'abuse_cheat', 'str': 'GPS spoofing' },
-]
+INAPPROPRIATE_MAP = {
+    'abuse_ma': 'Multiple accounts/account sharing',
+    'abuse_sell': 'Account buying/selling',
+    'abuse_cheat': 'GPS spoofing'
+}
 
 STATUS = [
   'new', 'close', 'delete', 
@@ -30,6 +30,7 @@ def admin_page(request):
     """Report management page."""
     report_list = Report.objects.all()
     for report in report_list:
+        report.inappropriate_type = INAPPROPRIATE_MAP[report.inappropriate_type]
         agents = SpoofAgent.objects.filter(report=report)
         report.agents = [a for a in agents]
     context = {
@@ -73,7 +74,7 @@ def api_list(request, user):
     for report in Report.objects.all():
         filepath = None
         if report.report_file:
-            filepath = '/reports/v1/{}'.format(report.report_file.upload_file.name)
+            filepath = '/static/files/{}'.format(report.report_file.upload_file.name)
         r = {
             'subject': report.subject,
             'description': report.description,

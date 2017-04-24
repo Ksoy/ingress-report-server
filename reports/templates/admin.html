@@ -4,6 +4,17 @@
   .show_detail {
     cursor: pointer;
   }
+  .detail_table tr td:first-child {
+    text-align: right;
+    vertical-align: top;
+    padding-right: 5px;
+    width: 160px;
+  }
+  textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+  }
 {% endblock %}
 
 {% block user_js %}
@@ -54,22 +65,19 @@
         </tr>
         <tr class="report_detail" r_id="{{report.id}}" hidden>
           <td colspan="4">
-            <table style="width:100%;">
+            <table class="detail_table" style="width:100%;">
               <tr>
-                <td width="150px"><label>Subject:</label></td>
+                <td><label>Subject:</label></td>
                 <td>{{report.subject}}</td>
               </tr>
-              <tr></tr>
               <tr>
                 <td><label>Description:</label></td>
-                <td><textarea style="width:100%;" rows="10" readonly>{{report.description}}</textarea></td>
+                <td><textarea rows="10" readonly>{{report.description}}</textarea></td>
               </tr>
-              <tr></tr>
               <tr>
                 <td><label>Inappropriate Type:</label></td>
                 <td>{{report.inappropriate_type}}</td>
               </tr>
-              <tr></tr>
               {% for agent in report.agents %}
               <tr>
                 <td rows="{{report.agents|length}}">{% if agent == report.agents.0 %}<label>Agents:</label>{% endif %}</td>
