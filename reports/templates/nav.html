@@ -8,7 +8,7 @@
   <div class="collapse navbar-collapse">
     <ul class="nav navbar-nav navbar-white">
       <li><a href="{% url 'reports:list_page' %}">list</a></li>
-      <li><a href="{% url 'reports:manage_page' %}">manage</a></li>
+      <li><a href="{% url 'reports:admin_page' %}">manage</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       {% if user.is_anonymous %}

@@ -122,6 +122,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = '/static/'
-MEDIA_ROOT = 'reports/'
+MEDIA_ROOT = 'reports/static/files/'
 CORS_ORIGIN_ALLOW_ALL = True
-LOGIN_REDIRECT_URL = '/reports/v1/manage'
+LOGIN_REDIRECT_URL = '/reports/v1/admin'

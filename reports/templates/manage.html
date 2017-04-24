@@ -1,86 +1,60 @@
 {% extends 'index.html' %}
 
-{% block user_css %}
-  .show_detail {
-    cursor: pointer;
-  }
-{% endblock %}
-
-{% block user_js %}
-  $(function(){
-    $(".show_detail").click(function(){
-      console.log($(this).children('.glyphicon'));
-      var detail = $((".report_detail[r_id=" + $(this).attr('r_id') + "]"));
-        detail.attr("hidden", !detail.attr("hidden"));
-      if($(this).children('.glyphicon-chevron-down').length) {
-        $(this).children('.glyphicon').removeClass('glyphicon-chevron-down');
-        $(this).children('.glyphicon').addClass('glyphicon-chevron-up');
-      }
-      else {
-        $(this).children('.glyphicon').removeClass('glyphicon-chevron-up');
-        $(this).children('.glyphicon').addClass('glyphicon-chevron-down');
-      }
-    });
-  });
-{% endblock %}
-
 {% block content %}
 
-<div class="row">
-  <div class="col-md-10 col-md-offset-1">
-    <div class="panel panel-default">
-      <div class="panel-heading" style="text-align:right;">
-        <div class="btn-group">
-          <a href="{% url 'reports:add_report_page' %}">
-            <div class="btn btn-info">Add</div>
-          </a>
-        </div>
-      </div>
-      <table class="table">
-        <thead>
-          <tr>
-            <th width="10%">#</th>
-            <th>subject</th>
-            <th width="20%">status</th>
-            <th width="10%">detail</th>
-          </tr>
-        </thead>
-        {% for report in report_list %}
-        <tr>
-          <td>{{report.id}}</td>
-          <td>{{report.subject}}</td>
-          <td>{{report.status}}</td>
-          <td class="show_detail" r_id="{{report.id}}"><span class="glyphicon glyphicon-chevron-down"></span></td>
-        </tr>
-        <tr class="report_detail" r_id="{{report.id}}" hidden>
-          <td colspan="4">
-            <table style="width:100%;">
-              <tr>
-                <td width="150px"><label>Subject:</label></td>
-                <td><input style="width:100%;" value="{{report.subject}}" readonly></input></td>
-              </tr>
-              <tr></tr>
-              <tr>
-                <td><label>Description:</label></td>
-                <td><textarea style="width:100%;" rows="10" readonly>{{report.description}}</textarea></td>
-              </tr>
-              <tr></tr>
-              <tr>
-                <td><label>Inappropriate Type:</label></td>
-                <td><input style="width:100%;" value="{{report.inappropriate_type}}" readonly></input></td>
-              </tr>
-              <tr></tr>
-              <tr>
-                <td><label>Agents:</label></td>
-                <td><input style="width:100%;" value="{{report.agents}}" readonly></input></td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
-    </div>
+<form action="{% url 'reports:save_report' %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input name='report_id' value="{{report.id}}" hidden></input>
+  <div class="form-group">
+    <label for="subject">Subject</label>
+    <input type="text" class="form-control" id="subject" name="subject" value="{{report.subject}}" required></input>
   </div>
-</div>
+
+  <div class="form-group">
+    <label for="description">Description</label>
+    <textarea class="form-control" id="description" name="description" rows="10" required>{{report.description}}</textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="inappropriate_type">Inappropriate Type</label>
+    <select class="form-control" id="inappropriate_type" name="inappropriate_type">
+      <option>-</option>
+      {% for inappropriate_type in INAPPROPRIATE_MAP %}
+        {% if report.inappropriate_type == inappropriate_type.name %}
+          <option value="{{inappropriate_type.name}}" selected>{{inappropriate_type.str}}</option>
+        {% else %}
+          <option value="{{inappropriate_type.name}}">{{inappropriate_type.str}}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="bad_agents">Inappropriate Agents Codename</label>
+    <input type="text" class="form-control" id="bad_agents" name="bad_agents" value="{{report.agents}}" aria-describedby="bad_agent_help" required></input>
+    <small id="bad_agent_help" class="form-text text-muted">Use ',' to separate agents codename.</small>
+  </div>
+
+  <div class="form-group">
+    <label for="status">Status</label>
+    <select class="form-control" id="status" name="status">
+      {% for status in STATUS %}
+        {% if report.status == status %}
+          <option value="{{status}}" selected="selected">{{status}}</option>
+        {% else %}
+          <option value="{{status}}">{{status}}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="upload_file">Select file to upload:</label>
+    <input type="file" name="upload_file" id="upload_file"></input>
+    <label id="upload_file_label">{{report.report_file.upload_file.name}}</label>
+    <input name="old_file_name" id="upload_file_name" value="{{report.report_file.upload_file.name}}" hidden></input>
+  </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
 
 {% endblock %}

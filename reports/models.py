@@ -6,7 +6,7 @@ import os
 def user_directory_path(instance, filename):
     instance.ori_name = filename
     _, ext = os.path.splitext(filename)
-    return 'files/{}{}'.format(str(uuid.uuid4()), ext)
+    return '{}{}'.format(str(uuid.uuid4()), ext)
 
 class ReportFile(models.Model):
     upload_file = models.FileField(upload_to=user_directory_path)
