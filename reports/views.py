@@ -61,7 +61,7 @@ def api_list(request, user):
             'description': report.description,
             'bad_agents': [],
             'inappropriate_type': report.inappropriate_type,
-            'file_link': '/reports/v1/files/{}'.format(report.report_file.upload_file.name),
+            'file_link': '/reports/v1/{}'.format(report.report_file.upload_file.name),
         }
         for bad_agent in SpoofAgent.objects.filter(report=report):
             status = bad_agent.status
