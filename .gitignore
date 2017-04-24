@@ -1,5 +1,6 @@
 db.sqlite3
 reports/static/app.js
+reports/static/files/*
 reports/node_modules
 reports/migrations
 reports/files/*
