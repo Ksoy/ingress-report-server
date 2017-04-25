@@ -20,9 +20,9 @@
 {% block user_js %}
   $(function(){
     $(".show_detail").click(function(){
-      console.log($(this).children('.glyphicon'));
       var detail = $((".report_detail[r_id=" + $(this).attr('r_id') + "]"));
-        detail.attr("hidden", !detail.attr("hidden"));
+      detail.attr("hidden", !detail.attr("hidden"));
+
       if($(this).children('.glyphicon-chevron-down').length) {
         $(this).children('.glyphicon').removeClass('glyphicon-chevron-down');
         $(this).children('.glyphicon').addClass('glyphicon-chevron-up');
@@ -32,11 +32,22 @@
         $(this).children('.glyphicon').addClass('glyphicon-chevron-down');
       }
     });
+
+    $('.burn_agent,.delete_agent').on('click', function() {
+      var status = $(this).text();
+      var a_id = $(this).attr('a_id');
+      var csrf = $('input[name=csrfmiddlewaretoken]').val();
+      var data = { 'status': status, 'a_id': a_id, 'csrfmiddlewaretoken': csrf};
+      $.post('/reports/v1/api/updateagent', data, function(res) {
+        location.reload(); 
+      });
+    });
+
   });
 {% endblock %}
 
 {% block content %}
-
+{% csrf_token %}
 <div class="row">
   <div class="col-md-10 col-md-offset-1">
     <div class="panel panel-default">
@@ -81,7 +92,7 @@
               {% for agent in report.agents %}
               <tr>
                 <td rows="{{report.agents|length}}">{% if agent == report.agents.0 %}<label>Agents:</label>{% endif %}</td>
-                <td>{{agent.name}} ({{agent.status}})</td>
+                <td>{{agent.name}} ({{agent.status}}) {% if agent.status == 'new' %}<button class="burn_agent" a_id="{{agent.id}}">burned</button><button class="delete_agent" a_id="{{agent.id}}">delete</button>{% endif %}</td>
               </tr>
               {% endfor %}
               <tr>

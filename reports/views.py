@@ -146,4 +146,14 @@ def api_save_report(request):
 
 def get_file(request):
     pass
-    
+   
+@login_required(login_url='/reports/v1/login')
+def api_update_agent(request):
+    a_id = request.POST.get('a_id')
+    status = request.POST.get('status')
+
+    agent = SpoofAgent.objects.get(id=a_id)
+    agent.status = status
+    agent.save()
+
+    return HttpResponse('ok')
