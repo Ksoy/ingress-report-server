@@ -71,7 +71,7 @@ def api_list(request, user):
     data = {
         'reports': []
     }
-    for report in Report.objects.all():
+    for report in Report.objects.filter():
         filepath = None
         if report.report_file:
             filepath = '/static/files/{}'.format(report.report_file.upload_file.name)
@@ -81,6 +81,7 @@ def api_list(request, user):
             'bad_agents': [],
             'inappropriate_type': report.inappropriate_type,
             'file_link': filepath,
+            'status': report.status,
         }
         for bad_agent in SpoofAgent.objects.filter(report=report):
             status = bad_agent.status
@@ -155,5 +156,10 @@ def api_update_agent(request):
     agent = SpoofAgent.objects.get(id=a_id)
     agent.status = status
     agent.save()
+    
+    if 0 == len(SpoofAgent.objects.filter(report=agent.report, status='new')):
+        report = agent.report
+        report.status = 'close'
+        report.save()
 
     return HttpResponse('ok')
