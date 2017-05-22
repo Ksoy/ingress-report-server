@@ -30,17 +30,13 @@ def list_page(request):
 
     cheater_list = Cheater.objects.all()
     for cheater in cheater_list:
-        print(cheater)
         reportcheater_list = ReportCheater.objects.filter(cheater=cheater)
         for reportcheater in reportcheater:
-            print(reportcheater)
-            record = ReportRecord.objects.filter(report_cheater=report_cheater)
-            print(record)
+            record = ReportRecord.objects.filter(report_cheater=reportcheater)
             cheater.report_record[reportcheater.report.id] = len(record)
     context = {
         'cheater_list': cheater_list,
     }
-    print(cheater_list) 
     return render(request, 'list.html', context)
 
 @login_required(login_url='/reports/v1/login')
@@ -49,8 +45,8 @@ def admin_page(request):
     report_list = Report.objects.all()
     for report in report_list:
         report.inappropriate_type = INAPPROPRIATE_MAP[report.inappropriate_type]
-        cheaters = Cheater.objects.filter(report=report)
-        report.cheaters = [a for a in cheaters]
+        reportcheaters = ReportCheater.objects.filter(report=report)
+        report.cheaters = [rc.cheater for rc in reportcheaters]
     context = {
         'report_list': report_list,
     }
@@ -65,8 +61,8 @@ def manage_page(request, r_id=None):
     }
     if r_id:
         report = Report.objects.get(id=r_id)
-        bad_agent_list = SpoofAgent.objects.filter(report=report)
-        report.agents = ', '.join([agent.name for agent in bad_agent_list])
+        reportcheater_list = ReportCheater.objects.filter(report=report)
+        report.cheaters = ', '.join([rc.cheater.name for rc in reportcheater_list])
         context['report'] = report
     return render(request, 'manage.html', context)
 
@@ -79,44 +75,46 @@ def api_list(request, user):
         'reports': []
     }
     for report in Report.objects.filter():
-        filepath = None
+        filename = None
         if report.report_file:
-            filepath = '/static/files/{}'.format(report.report_file.upload_file.name)
-        r = {
+            filename = report.report_file.upload_file.name
+        report_data = {
+            'report_id': report.id,
             'subject': report.subject,
             'description': report.description,
-            'bad_agents': [],
+            'cheaters': [],
             'inappropriate_type': report.inappropriate_type,
-            'file_link': filepath,
+            'filename': filename,
             'status': report.status,
         }
-        for bad_agent in SpoofAgent.objects.filter(report=report):
-            status = bad_agent.status
-            if status != 'burn':
+        for report_cheater in ReportCheater.objects.filter(report=report):
+            status = report_cheater.cheater.status
+            if status != 'burned':
                 try:
                     agent = Agent.objects.get(name=user)
-                    record = ReportRecord.objects.get(agent=agent, spoof_agent=bad_agent)
+                    record = ReportRecord.objects.get(agent=agent, report_cheater=report_cheater)
                     status = 'Done'
                 except:
                     pass
-            ba = {
-                'name': bad_agent.name,
+            cheater = {
+                'name': report_cheater.cheater.name,
                 'status': status,
             }
-            r['bad_agents'].append(ba)
+            report_data['cheaters'].append(cheater)
 
-        data['reports'].append(r)
+        data['reports'].append(report_data)
 	
     return HttpResponse(json.dumps(data))
 
-def api_record(request, user, report):
+def api_record(request, agent_name, report_id, cheater_name):
     """Record agent report spoofagent history."""
     try:
-        agent, created = Agent.objects.get_or_create(name=user)
-        if created:
-            agent.save()
-        spoof_agent = SpoofAgent.objects.filter(name=report)
-        report_record = ReportRecord(agent=agent, spoof_agent=spoof_agent[0])
+        agent, created = Agent.objects.get_or_create(name=agent_name)
+        agent.save()
+        cheater = Cheater.objects.filter(name=cheater_name)
+        report = Report.objects.filter(id=report_id)
+        report_cheater = ReportCheater.objects.filter(report=report[0], cheater=cheater[0])
+        report_record = ReportRecord(agent=agent, report_cheater=report_cheater[0])
         report_record.save()
     except:
         return HttpResponse('false')
@@ -140,30 +138,38 @@ def api_save_report(request):
             report_file = ReportFile(upload_file=request.FILES['upload_file'])
             report_file.save()
             report.report_file = report_file
-
         report.save()
-        
-        bad_agents = request.POST.get('bad_agents').split(',')
-        for bad_agent_name in bad_agents:
-            bad_agent, is_create = SpoofAgent.objects.get_or_create(name=bad_agent_name.strip(),
-                                                                    report=report)
-            bad_agent.save()
+
+        cheater_list = request.POST.get('cheaters').split(',')
+        for cheater_name in cheater_list:
+            cheater, is_create = Cheater.objects.get_or_create(name=cheater_name.strip())
+            cheater.save()
+            reportcheater, is_create = ReportCheater.objects.get_or_create(cheater=cheater, report=report)
+            reportcheater.save()
 
         return redirect('reports:admin_page')
     return HttpResponse(status=404)
 
 @login_required(login_url='/reports/v1/login')
 def api_update_agent(request):
-    a_id = request.POST.get('a_id')
+    c_id = request.POST.get('c_id')
+    r_id = request.POST.get('r_id')
     status = request.POST.get('status')
 
-    agent = SpoofAgent.objects.get(id=a_id)
-    agent.status = status
-    agent.save()
-    
-    if 0 == len(SpoofAgent.objects.filter(report=agent.report, status='new')):
-        report = agent.report
-        report.status = 'close'
-        report.save()
+    cheater = Cheater.objects.get(id=c_id)
+    cheater.status = status
+    cheater.save()
+   
+    reportcheaters = ReportCheater.objects.get(cheater=cheater)
+    for rc in reportcheaters:
+        rcs = ReportCheater.objects.get(report=rc.report)
+        flag = True
+        for rc_ in rcs:
+            if tc_.cheater.status == 'new':
+                flag = False
+                break
+        if flag:
+            rc.report.status = 'close'
+            rc.report.save()
 
     return HttpResponse('ok')
