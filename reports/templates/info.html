@@ -1,0 +1,41 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<form> 
+  <div class="form-group">
+    <label>Subject:</label>
+    <p>{{report.subject}}</p>
+  </div>
+
+  <div class="form-group">
+    <label>Description:</label>
+    <p><textarea style="width:100%;resize:none;border:none;" readonly>{{report.description}}</textarea></p>
+    <script>
+    $(function(){
+      $("textarea").height($("textarea").prop("scrollHeight")+"px");
+    });
+    </script>
+  </div>
+  <div class="form-group">
+    <label>Inappropriate Type:</label>
+    <p>{{report.inappropriate_type}}</p>
+  </div>
+
+  <div class="form-group">
+    <label>Inappropriate Agents Codename:</label>
+    <p>{{report.cheaters}}</p>
+  </div>
+
+  <div class="form-group">
+    <label>Status</label>
+    <p>{{report.status}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="upload_file">Report File:</label>
+    <p><a href="http://fuckagent.nctu.me:7890/{{report.report_file.upload_file.name}}">{{report.report_file.upload_file.name}}</a></p>
+  </div>
+</form>
+
+{% endblock %}

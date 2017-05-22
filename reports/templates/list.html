@@ -22,8 +22,8 @@
         <td>{{cheater.name}}</td>
         <td>{{cheater.status}}</td>
         <td>
-          {% for report_key, report_value in cheater.report_record %}
-            <a href="{{report_value}}">{{report_key}}</a>,
+          {% for record in cheater.report_record %}
+            <a href="info/{{record.id}}">{{record.num}}</a>,
           {% endfor %}
         </td>
       </tr>

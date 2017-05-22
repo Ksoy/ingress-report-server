@@ -30,14 +30,26 @@ def list_page(request):
 
     cheater_list = Cheater.objects.all()
     for cheater in cheater_list:
-        reportcheater_list = ReportCheater.objects.filter(cheater=cheater)
-        for reportcheater in reportcheater:
-            record = ReportRecord.objects.filter(report_cheater=reportcheater)
-            cheater.report_record[reportcheater.report.id] = len(record)
+        report_cheater_list = ReportCheater.objects.filter(cheater=cheater).order_by('report')
+        for report_cheater in report_cheater_list:
+            record = ReportRecord.objects.filter(report_cheater=report_cheater)
+            cheater.report_record.append({'id': report_cheater.report.id, 'num': len(record)})
     context = {
         'cheater_list': cheater_list,
     }
     return render(request, 'list.html', context)
+
+def info_page(request, r_id):
+    """Report infomation page."""
+
+    report = Report.objects.get(id=r_id)
+    report.inappropriate_type = INAPPROPRIATE_MAP[report.inappropriate_type]
+    report_cheater_list = ReportCheater.objects.filter(report=report)
+    report.cheaters = ', '.join([rc.cheater.name for rc in report_cheater_list])
+    context = {
+        'report': report
+    }
+    return render(request, 'info.html', context)
 
 @login_required(login_url='/reports/v1/login')
 def admin_page(request):
@@ -45,8 +57,8 @@ def admin_page(request):
     report_list = Report.objects.all()
     for report in report_list:
         report.inappropriate_type = INAPPROPRIATE_MAP[report.inappropriate_type]
-        reportcheaters = ReportCheater.objects.filter(report=report)
-        report.cheaters = [rc.cheater for rc in reportcheaters]
+        report_cheaters = ReportCheater.objects.filter(report=report)
+        report.cheaters = [rc.cheater for rc in report_cheaters]
     context = {
         'report_list': report_list,
     }

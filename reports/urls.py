@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^v1/list$', views.list_page, name='list_page'),
     url(r'^v1/admin$', views.admin_page, name='admin_page'),
     url(r'^v1/manage/(?P<r_id>[0-9]*)$', views.manage_page, name='manage_page'),
+    url(r'^v1/info/(?P<r_id>[0-9]*)$', views.info_page, name='info_page'),
 
     url(r'^v1/api/list/(?P<user>[a-zA-Z0-9]+)$', views.api_list, name='list'),
     url(r'^v1/api/record/(?P<agent_name>[a-zA-Z0-9]+)/(?P<report_id>[0-9]+)/(?P<cheater_name>[a-zA-Z0-9]+)$', views.api_record, name='record'),
