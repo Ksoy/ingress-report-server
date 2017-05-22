@@ -4,9 +4,9 @@
 <div class="row">
 <div class="col-md-10 col-md-offset-1">
 <div class="panel panel-default">
-  <div class="panel-heading">Bad Agents...</div>
+  <div class="panel-heading">Cheaters...</div>
 
-  {% if bad_agent_list %}
+  {% if cheater_list %}
     <table class="table">
       <thead>
         <tr>
@@ -16,12 +16,16 @@
           <th>report numbers</th>
         </tr>
       </thead>
-    {% for bad_agent in bad_agent_list %}
+    {% for cheater in cheater_list %}
       <tr>
-        <td>{{bad_agent.id}}</td>
-        <td>{{bad_agent.name}}</td>
-        <td>{{bad_agent.status}}</td>
-        <td>{{bad_agent.numbers}}</td>
+        <td>{{cheater.id}}</td>
+        <td>{{cheater.name}}</td>
+        <td>{{cheater.status}}</td>
+        <td>
+          {% for report_key, report_value in cheater.report_record %}
+            <a href="{{report_value}}">{{report_key}}</a>,
+          {% endfor %}
+        </td>
       </tr>
     {% endfor %}
     </table>

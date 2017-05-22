@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template import loader
 
-from .models import SpoofAgent, Report, ReportRecord, Agent, ReportFile
+from .models import Agent, Cheater, Report, ReportCheater, ReportFile, ReportRecord
 
 INAPPROPRIATE_MAP = {
     'abuse_ma': 'Multiple accounts/account sharing',
@@ -23,7 +23,25 @@ STATUS = [
 
 # Create your views here.
 def home_page(request):
-    return render(request, 'home.html') # HttpResponse("Hello, world. You're at the polls index.")
+    return render(request, 'home.html') 
+
+def list_page(request):
+    """List all reports page."""
+
+    cheater_list = Cheater.objects.all()
+    for cheater in cheater_list:
+        print(cheater)
+        reportcheater_list = ReportCheater.objects.filter(cheater=cheater)
+        for reportcheater in reportcheater:
+            print(reportcheater)
+            record = ReportRecord.objects.filter(report_cheater=report_cheater)
+            print(record)
+            cheater.report_record[reportcheater.report.id] = len(record)
+    context = {
+        'cheater_list': cheater_list,
+    }
+    print(cheater_list) 
+    return render(request, 'list.html', context)
 
 @login_required(login_url='/reports/v1/login')
 def admin_page(request):
@@ -31,26 +49,12 @@ def admin_page(request):
     report_list = Report.objects.all()
     for report in report_list:
         report.inappropriate_type = INAPPROPRIATE_MAP[report.inappropriate_type]
-        agents = SpoofAgent.objects.filter(report=report)
-        report.agents = [a for a in agents]
+        cheaters = Cheater.objects.filter(report=report)
+        report.cheaters = [a for a in cheaters]
     context = {
         'report_list': report_list,
     }
     return render(request, 'admin.html', context)
-
-def list_page(request):
-    """List all reports page."""
-
-    bad_agent_list = SpoofAgent.objects.all()
-    #data = serializers.serialize("json", SpoofAgent.objects.filter(report_id=1))
-    for bad_agent in bad_agent_list:
-        record = ReportRecord.objects.filter(spoof_agent=bad_agent)
-        bad_agent.numbers = len(record)
-    context = {
-        'bad_agent_list': bad_agent_list,
-    }
-    
-    return render(request, 'list.html', context)
 
 @login_required(login_url='/reports/v1/login')
 def manage_page(request, r_id=None):
@@ -65,6 +69,9 @@ def manage_page(request, r_id=None):
         report.agents = ', '.join([agent.name for agent in bad_agent_list])
         context['report'] = report
     return render(request, 'manage.html', context)
+
+###############################################################################
+# api 
 
 def api_list(request, user):
     """Reutn all report information."""
@@ -145,9 +152,6 @@ def api_save_report(request):
         return redirect('reports:admin_page')
     return HttpResponse(status=404)
 
-def get_file(request):
-    pass
-   
 @login_required(login_url='/reports/v1/login')
 def api_update_agent(request):
     a_id = request.POST.get('a_id')

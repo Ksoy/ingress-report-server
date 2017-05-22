@@ -37,9 +37,9 @@ class Report(models.Model):
     inappropriate_type = models.CharField(max_length=20, choices=INAPPROPRIATE_TYPE_CHOICES)
     report_file = models.ForeignKey(ReportFile)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
-    agents = ''
+    cheaters = []
 
-class SpoofAgent(models.Model):
+class Cheater(models.Model):
     STATUS_CHOICES = (
         ('new', 'new'),
         ('burned', 'burned'),
@@ -48,15 +48,19 @@ class SpoofAgent(models.Model):
     name = models.CharField(max_length=200)
     report = models.ForeignKey(Report)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
+    report_record = {}
+
+class ReportCheater(models.Model):
+    report = models.ForeignKey(Report)
+    cheater = models.ForeignKey(Cheater)
 
 class Agent(models.Model):
     name = models.CharField(max_length=200)    
 
 class ReportRecord(models.Model):
     agent = models.ForeignKey(Agent)
-    spoof_agent = models.ForeignKey(SpoofAgent)
+    report_cheater = models.ForeignKey(ReportCheater)
     report_time = models.DateTimeField(editable=False)
-    numbers = 0
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
