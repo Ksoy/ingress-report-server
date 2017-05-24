@@ -35,7 +35,7 @@ class Report(models.Model):
     subject = models.CharField(max_length=150)
     description = models.TextField()
     inappropriate_type = models.CharField(max_length=20, choices=INAPPROPRIATE_TYPE_CHOICES)
-    report_file = models.ForeignKey(ReportFile)
+    report_file = models.ForeignKey(ReportFile, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
     cheaters = []
 
