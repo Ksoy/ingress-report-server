@@ -125,3 +125,4 @@ STATIC_ROOT = '/static/'
 MEDIA_ROOT = 'reports/static/files/'
 CORS_ORIGIN_ALLOW_ALL = True
 LOGIN_REDIRECT_URL = '/reports/v1/admin'
+FILE_UPLOAD_PERMISSIONS = 0o644
