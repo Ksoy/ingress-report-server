@@ -8,7 +8,10 @@
   <div class="collapse navbar-collapse">
     <ul class="nav navbar-nav navbar-white">
       <li><a href="{% url 'reports:list_page' %}">list</a></li>
+      {% if user.is_anonymous %}
+      {% else %}
       <li><a href="{% url 'reports:admin_page' %}">manage</a></li>
+      {% endif %}
     </ul>
     <ul class="nav navbar-nav navbar-right">
       {% if user.is_anonymous %}
@@ -16,6 +19,7 @@
       {% else %}
         <li><a href="{% url 'reports:logout_page' %}?next={% url 'reports:home_page' %}">logout</a></li>
       {% endif %}
+        <li><a>   </a></li>
     </ul>
   </div>
 </nav>
