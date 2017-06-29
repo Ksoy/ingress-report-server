@@ -31,10 +31,11 @@ def list_page(request):
     cheater_list = Cheater.objects.all()
     for cheater in cheater_list:
         report_cheater_list = ReportCheater.objects.filter(cheater=cheater).order_by('report')
-        report_record = []
+        count = 0
         for report_cheater in report_cheater_list:
             record = ReportRecord.objects.filter(report_cheater=report_cheater)
-            report_record.append({'id': report_cheater.report.id, 'num': len(record)})
+            count += len(record)
+        report_record = {'reports': len(report_cheater_list), 'count': count}
         cheater.report_record = report_record
     context = {
         'cheater_list': cheater_list,

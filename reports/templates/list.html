@@ -13,7 +13,7 @@
           <th>#</th>
           <th>name</th>
           <th>status</th>
-          <th>report numbers</th>
+          <th>report status</th>
         </tr>
       </thead>
     {% for cheater in cheater_list %}
@@ -21,11 +21,7 @@
         <td>{{cheater.id}}</td>
         <td>{{cheater.name}}</td>
         <td>{{cheater.status}}</td>
-        <td>
-          {% for record in cheater.report_record %}
-            <a href="info/{{record.id}}">{{record.num}}</a>,
-          {% endfor %}
-        </td>
+        <td>reported <b>{{cheater.report_record.count}}</b> times in <b>{{cheater.report_record.reports}}</b> reports.</td>
       </tr>
     {% endfor %}
     </table>
