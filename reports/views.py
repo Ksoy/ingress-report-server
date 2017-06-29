@@ -106,8 +106,9 @@ def api_list(request, user):
             if status != 'burned':
                 try:
                     agent = Agent.objects.get(name=user)
-                    record = ReportRecord.objects.get(agent=agent, report_cheater=report_cheater)
-                    status = 'Done'
+                    records = ReportRecord.objects.filter(agent=agent, report_cheater=report_cheater)
+                    if len(records) > 0:
+                        status = 'Done'
                 except:
                     pass
             cheater = {
