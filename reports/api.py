@@ -4,6 +4,7 @@ import ntpath
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -11,6 +12,12 @@ from django.template import loader
 
 from .models import Agent, Cheater, Report, ReportCheater, ReportFile, ReportRecord
 from .config import INAPPROPRIATE_MAP, EXTENSION_VERSION
+
+def user_list(request):
+    data = {
+      'users': serializers.serialize('json', User.objects.all())
+    }
+    return HttpResponse(json.dumps(data))
 
 def cheater_list(request):
     data = {
@@ -34,7 +41,38 @@ def cheater_list(request):
     return HttpResponse(json.dumps(data))
 
 @login_required(login_url='/reports/v1/login')
-def report_list(request, user=None):
+def all_report_list(request):
+    """Reutn all report information."""
+    data = {
+        'reports': []
+    }
+    for report in Report.objects.filter():
+        filename = None
+        if report.report_file:
+            filename = report.report_file.upload_file.name
+        report_data = {
+            'report_id': report.id,
+            'subject': report.subject,
+            'description': report.description,
+            'cheaters': [],
+            'inappropriate_type': INAPPROPRIATE_MAP[report.inappropriate_type],
+            'filename': filename,
+            'status': report.status,
+        }
+        for report_cheater in ReportCheater.objects.filter(report=report):
+            status = report_cheater.cheater.status
+            cheater = {
+                'cheater_id': report_cheater.cheater.id,
+                'name': report_cheater.cheater.name,
+                'status': report_cheater.cheater.status,
+            }
+            report_data['cheaters'].append(cheater)
+
+        data['reports'].append(report_data)
+	
+    return HttpResponse(json.dumps(data))
+
+def report_list(request, user):
     """Reutn all report information."""
     data = {
         'reports': []

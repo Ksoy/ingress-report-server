@@ -1,7 +1,8 @@
 {% extends 'index.html' %}
 
 {% block other_js %}
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+<script src="https://code.angularjs.org/1.4.8/angular.js"></script>
+<script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.0.3.js"></script>
 {% endblock %}
 
 {% block user_css %}
@@ -22,113 +23,108 @@
 {% endblock %}
 
 {% block user_js %}
-var ingressApp = angular.module('ingressApp', []);
+var ingressApp = angular.module('ingressApp', ["ui.bootstrap"]);
 ingressApp.controller('ingressController', function ingressController($scope, $http) {
-  $http.get('{% url 'reports:report_list' %}').
+  $scope.page = 1;
+  $scope.all_reports = [];
+  $http.get('{% url 'reports:all_report_list' %}').
     success(function (data) {
-      $scope.reports = data.reports;
+      $scope.all_reports = data.reports;
+      console.log(data.reports);
     });
-});
-
-  $(function(){
-    $(".show_detail").click(function(){
-      var detail = $((".report_detail[r_id=" + $(this).attr('r_id') + "]"));
+  $scope.showDetail = function(report_id) {
+      console.log(report_id);
+      var detail = $((".report_detail[r_id=" + report_id + "]"));
       detail.attr("hidden", !detail.attr("hidden"));
 
-      if($(this).children('.glyphicon-chevron-down').length) {
-        $(this).children('.glyphicon').removeClass('glyphicon-chevron-down');
-        $(this).children('.glyphicon').addClass('glyphicon-chevron-up');
+      if($(".show_detail[r_id=" + report_id + "]").children('.glyphicon-chevron-down').length) {
+        $(".show_detail[r_id=" + report_id + "]").children('.glyphicon').removeClass('glyphicon-chevron-down');
+        $(".show_detail[r_id=" + report_id + "]").children('.glyphicon').addClass('glyphicon-chevron-up');
       }
       else {
-        $(this).children('.glyphicon').removeClass('glyphicon-chevron-up');
-        $(this).children('.glyphicon').addClass('glyphicon-chevron-down');
+        $(".show_detail[r_id=" + report_id + "]").children('.glyphicon').removeClass('glyphicon-chevron-up');
+        $(".show_detail[r_id=" + report_id + "]").children('.glyphicon').addClass('glyphicon-chevron-down');
       }
+  };
+  $scope.updateCheater = function(cheater_id, status) {
+    var csrf = $('input[name=csrfmiddlewaretoken]').val();
+    var data = {'status': status,
+                'cheater_id': cheater_id,
+                'csrfmiddlewaretoken': csrf};
+    $.post('/reports/v1/api/updateagent', data, function(res) {
+      location.reload();
     });
-
-    $('.burn_agent,.delete_agent').on('click', function() {
-      var status = $(this).text();
-      var c_id = $(this).attr('c_id');
-      var r_id = $(this).attr('r_id');
-      var csrf = $('input[name=csrfmiddlewaretoken]').val();
-      var data = {'status': status, 
-                  'c_id': c_id, 
-                  'r_id': r_id,
-                  'csrfmiddlewaretoken': csrf};
-      $.post('/reports/v1/api/updateagent', data, function(res) {
-        location.reload(); 
-      });
-    });
-
-  });
+  };
+});
 {% endblock %}
 
 {% block content %}
 {% csrf_token %}
-<div class="row">
-  <div class="col-md-10 col-md-offset-1">
-    <div class="panel panel-default">
-      <div class="panel-heading" style="text-align:right;">
-        <div class="btn-group">
-          <a>
-            <div class="btn btn-info">Add</div>
-          </a>
-        </div>
-      </div>
-      <table class="table" style="table-layout:fixed;">
-        <thead>
-          <tr>
-            <th width="5%">#</th>
-            <th width="70%">subject</th>
-            <th width="15%">status</th>
-            <th width="10%">detail</th>
-          </tr>
-        </thead>
-        {% for report in report_list %}
-        <tr>
-          <td>{{report.id}}</td>
-          <td style="max-width:100%;overflow:hidden;text-overflow:ellipsis;">{{report.subject}}</td>
-          <td>{{report.status}}</td>
-          <td class="show_detail" r_id="{{report.id}}"><span class="glyphicon glyphicon-chevron-down"></span></td>
-        </tr>
-        <tr class="report_detail" r_id="{{report.id}}" hidden>
-          <td colspan="4">
-            <table class="detail_table" style="width:100%;">
-              <tr>
-                <td><label>Subject:</label></td>
-                <td style="max-width:100;word-wrap:break-word;">{{report.subject}}</td>
-              </tr>
-              <tr>
-                <td><label>Description:</label></td>
-                <td><textarea rows="10" readonly>{{report.description}}</textarea></td>
-              </tr>
-              <tr>
-                <td><label>Inappropriate Type:</label></td>
-                <td>{{report.inappropriate_type}}</td>
-              </tr>
-              {% for cheater in report.cheaters %}
-              <tr>
-                <td rows="{{report.cheaters|length}}">{% if cheater == report.cheaters.0 %}<label>Agents:</label>{% endif %}</td>
-                <td>{{cheater.name}} ({{cheater.status}}) 
-                  {% if cheater.status == 'new' %}
-                  <button class="burn_agent" c_id="{{cheater.id}}" r_id="{{report.id}}">burned</button>
-                  <button class="delete_agent" c_id="{{cheater.id}}" r_id="{{report.id}}">delete</button>
-                  {% endif %}
-                </td>
-              </tr>
-              {% endfor %}
-              <tr>
-                <td><label>Status:</label></td>
-                <td>{{report.status}}</td>
-              </tr>
-              <tr>
-                <td></td> 
-            </table>
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
+<div class="row" ng-app="ingressApp" ng-controller="ingressController">
+<div class="col-md-10 col-md-offset-1">
+<div class="panel panel-default" style="text-align:center;">
+  <div class="panel-heading" style="text-align:right;">
+    <div class="btn-group">
+      <a href="{% url 'reports:report_manage_page' r_id='' %}"><div class="btn btn-info">Add</div></a>
     </div>
   </div>
+  <table class="table" style="table-layout:fixed;">
+    <thead>
+      <tr>
+        <th width="5%">#</th>
+        <th width="70%">subject</th>
+        <th width="15%">status</th>
+        <th width="10%">detail</th>
+      </tr>
+    </thead>
+    <tbody ng-repeat="report in filter_reports = (all_reports) | limitTo:10:10*(page-1)">
+    <tr>
+      <td>{% templatetag openvariable %}report.report_id{% templatetag closevariable %}</td>
+      <td style="max-width:100%;overflow:hidden;text-overflow:ellipsis;">{% templatetag openvariable %}report.subject{% templatetag closevariable %}</td>
+      <td>{% templatetag openvariable %}report.status{% templatetag closevariable %}</td>
+      <td class="show_detail" r_id="{% templatetag openvariable %}report.report_id{% templatetag closevariable %}" ng-click="showDetail(report.report_id)"><span class="glyphicon glyphicon-chevron-down"></span></td>
+    </tr>
+    <tr class="report_detail" r_id="{% templatetag openvariable %}report.report_id{% templatetag closevariable %}" hidden> 
+      <td colspan="4">
+        <table class="detail_table" style="width:100%;">
+          <tr>
+            <td><label>Subject:</label></td>
+            <td style="max-width:100;word-wrap:break-word;">{% templatetag openvariable %}report.subject{% templatetag closevariable %}</td>
+          </tr>
+          <tr>
+            <td><label>Description:</label></td>
+            <td><textarea rows="10" readonly>{% templatetag openvariable %}report.description{% templatetag closevariable %}</textarea></td>
+          </tr>
+          <tr>
+            <td><label>Inappropriate Type:</label></td>
+            <td>{% templatetag openvariable %}report.inappropriate_type{% templatetag closevariable %}</td>
+          </tr>
+          <tr ng-repeat="cheater in report.cheaters">
+            <td rows="{% templatetag openvariable %}report.cheaters.length{% templatetag closevariable %}">
+              <label ng-if="cheater === report.cheaters[0]">Agents:</label>
+            </td>
+            <td>{% templatetag openvariable %}cheater.name{% templatetag closevariable %} ({% templatetag openvariable %}cheater.status{% templatetag closevariable %}) 
+              <button class="burn_agent" ng-if="cheater.status === 'alive'" ng-click="updateCheater(cheater.cheater_id, 'burned')">burned</button>
+              <button class="delete_agent" ng-if="cheater.status === 'alive'" ng-click="updateCheater(cheater.cheater_id, 'delete')">delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td><label>Status:</label></td>
+            <td>{% templatetag openvariable %}report.status{% templatetag closevariable %}</td>
+          </tr>
+          <tr>
+            <td></td> 
+            <td style="text-align:right;"><a href="{% url 'reports:report_manage_page' r_id='' %}{% templatetag openvariable %}report.report_id{% templatetag closevariable %}" class="btn btn-success">modify</a></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <uib-pagination class="pagination-sm pagination" total-items="filter_reports.length" ng-model="page"
+    previous-text="&lsaquo;" next-text="&rsaquo;" items-per-page=10></uib-pagination>
+</div>
+</div>
 </div>
 
 {% endblock %}
