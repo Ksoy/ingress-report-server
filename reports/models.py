@@ -48,7 +48,6 @@ class Cheater(models.Model):
 
     name = models.CharField(max_length=200)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='alive')
-    report_record = []
 
 class ReportCheater(models.Model):
     report = models.ForeignKey(Report)

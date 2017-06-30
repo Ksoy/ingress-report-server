@@ -1,5 +1,9 @@
 {% extends 'index.html' %}
 
+{% block other_js %}
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+{% endblock %}
+
 {% block user_css %}
   .show_detail {
     cursor: pointer;
@@ -18,6 +22,14 @@
 {% endblock %}
 
 {% block user_js %}
+var ingressApp = angular.module('ingressApp', []);
+ingressApp.controller('ingressController', function ingressController($scope, $http) {
+  $http.get('{% url 'reports:report_list' %}').
+    success(function (data) {
+      $scope.reports = data.reports;
+    });
+});
+
   $(function(){
     $(".show_detail").click(function(){
       var detail = $((".report_detail[r_id=" + $(this).attr('r_id') + "]"));
@@ -62,19 +74,19 @@
           </a>
         </div>
       </div>
-      <table class="table">
+      <table class="table" style="table-layout:fixed;">
         <thead>
           <tr>
-            <th width="10%">#</th>
-            <th width="60%">subject</th>
-            <th width="20%">status</th>
+            <th width="5%">#</th>
+            <th width="70%">subject</th>
+            <th width="15%">status</th>
             <th width="10%">detail</th>
           </tr>
         </thead>
         {% for report in report_list %}
         <tr>
           <td>{{report.id}}</td>
-          <td>{{report.subject}}</td>
+          <td style="max-width:100%;overflow:hidden;text-overflow:ellipsis;">{{report.subject}}</td>
           <td>{{report.status}}</td>
           <td class="show_detail" r_id="{{report.id}}"><span class="glyphicon glyphicon-chevron-down"></span></td>
         </tr>
@@ -83,7 +95,7 @@
             <table class="detail_table" style="width:100%;">
               <tr>
                 <td><label>Subject:</label></td>
-                <td>{{report.subject}}</td>
+                <td style="max-width:100;word-wrap:break-word;">{{report.subject}}</td>
               </tr>
               <tr>
                 <td><label>Description:</label></td>

@@ -11,7 +11,29 @@ from django.template import loader
 
 from .models import Agent, Cheater, Report, ReportCheater, ReportFile, ReportRecord
 
-def list(request, user):
+def cheater_list(request):
+    data = {
+      'cheaters': []
+    }
+    for cheater in Cheater.objects.filter():
+        report_cheaters = ReportCheater.objects.filter(cheater=cheater).order_by('report')
+        times = 0
+        for report_cheater in report_cheaters:
+            record = ReportRecord.objects.filter(report_cheater=report_cheater)
+            times += len(record)
+        cheater_data = {
+            'id': cheater.id,
+            'name': cheater.name,
+            'status': cheater.status,
+            'report_times': times,
+            'report_count': len(report_cheaters)
+        }
+        data['cheaters'].append(cheater_data)
+        
+    return HttpResponse(json.dumps(data))
+
+@login_required(login_url='/reports/v1/login')
+def report_list(request, user=None):
     """Reutn all report information."""
     data = {
         'reports': []

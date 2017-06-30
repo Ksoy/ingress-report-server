@@ -1,35 +1,66 @@
 {% extends "home.html" %}
 
+{% block other_js %}
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+{% endblock %}
+
+{% block user_css %}
+{% include "angular/pager.css" %}
+{% endblock %}
+
+{% block user_js %}
+var ingressApp = angular.module('ingressApp', []);
+ingressApp.controller('IngressController', function IngressController($scope, $http, PagerService) {
+  $scope.all_cheaters = [];
+  $scope.cheaters = [];
+  $http.get('{% url 'reports:cheater_list' %}').
+    success(function (data) {
+      $scope.all_cheaters = data.cheaters;
+      $scope.setPage(1);
+    });
+
+  $scope.pager = {};
+  $scope.setPage = function (page) {
+    if (page < 1 || page > $scope.pager.totalPages) {
+      return;
+    }
+    $scope.pager = PagerService.GetPager($scope.all_cheaters.length, page);
+    $scope.cheaters = $scope.all_cheaters.slice($scope.pager.startIndex, $scope.pager.endIndex + 1);
+  }
+});
+
+{% include "angular/PagerService.js" %}
+{% endblock %}
+
+
 {% block content %}
 <div class="row">
 <div class="col-md-10 col-md-offset-1">
-<div class="panel panel-default">
+<div class="panel panel-default" style="text-align:center;">
   <div class="panel-heading">Cheaters...</div>
-
-  {% if cheater_list %}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>name</th>
-          <th>status</th>
-          <th>report status</th>
-        </tr>
-      </thead>
-    {% for cheater in cheater_list %}
+  <table class="table">
+    <thead>
       <tr>
-        <td>{{cheater.id}}</td>
-        <td>{{cheater.name}}</td>
-        <td>{{cheater.status}}</td>
-        <td>reported <b>{{cheater.report_record.count}}</b> times in <b>{{cheater.report_record.reports}}</b> reports.</td>
+        <th style="width:5%;">#</th>
+        <th style="width:30%;">name  <input style="font-weight:normal;line-height:normal;" placeholder="Search name" ng-model="$scope.search_cheater.name"></th>
+        <th style="width:20%;">status
+          <select ng-model="$scope.search_cheater.status">
+            <option value="" selected>all</option>
+            <option value="alive">alive</option>
+            <option value="burned">burned</option>
+          </select>
+        </th>
+        <th style="width:40%;">report status</th>
       </tr>
-    {% endfor %}
-    </table>
-  {% else %}
-    <div class="panel-body">
-      <p> No spoof_agent </p>
-    </div>
-  {% endif %}
+    </thead>
+    <tr ng-repeat="cheater in cheaters | filter:$scope.search_cheater">
+      <td>{% templatetag openvariable %}cheater.id{% templatetag closevariable %}</td>
+      <td>{% templatetag openvariable %}cheater.name{% templatetag closevariable %}</td>
+      <td>{% templatetag openvariable %}cheater.status{% templatetag closevariable %}</td>
+      <td>reported <b>{% templatetag openvariable %}cheater.report_times{% templatetag closevariable %}</b> times in <b>{% templatetag openvariable %}cheater.report_count{% templatetag closevariable %}</b> reports.</td>
+    </tr>
+  </table>
+{% include "angular/pager.html" %}
 </div>
 </div>
 </div>
