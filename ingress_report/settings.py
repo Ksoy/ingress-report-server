@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'vgh^%@srm_j119!x5s0sx(4*js9$w9f@ww1t@$ik1)cb0kg(v='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [ "*"]
 
@@ -124,5 +124,5 @@ STATIC_URL = '/static/'
 STATIC_ROOT = '/static/'
 MEDIA_ROOT = 'reports/static/files/'
 CORS_ORIGIN_ALLOW_ALL = True
-LOGIN_REDIRECT_URL = '/reports/v1/admin'
+LOGIN_REDIRECT_URL = '/reports/v1/manage_report'
 FILE_UPLOAD_PERMISSIONS = 0o644

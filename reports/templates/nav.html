@@ -10,7 +10,8 @@
       <li><a href="{% url 'reports:list_page' %}">list</a></li>
       {% if user.is_anonymous %}
       {% else %}
-      <li><a href="{% url 'reports:admin_page' %}">manage</a></li>
+      <li><a href="{% url 'reports:manage_report_page' %}">reports</a></li>
+      <li><a href="{% url 'reports:manage_user_page' %}">users</a></li>
       {% endif %}
     </ul>
     <ul class="nav navbar-nav navbar-right">

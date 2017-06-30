@@ -11,84 +11,7 @@ from django.template import loader
 
 from .models import Agent, Cheater, Report, ReportCheater, ReportFile, ReportRecord
 
-INAPPROPRIATE_MAP = {
-    'abuse_ma': 'Multiple accounts/account sharing',
-    'abuse_sell': 'Account buying/selling',
-    'abuse_cheat': 'GPS spoofing'
-}
-
-STATUS = [
-  'new', 'close', 'delete', 
-]
-
-def home_page(request):
-    return render(request, 'home.html') 
-
-def list_page(request):
-    """List all reports page."""
-
-    cheater_list = Cheater.objects.all()
-    for cheater in cheater_list:
-        report_cheater_list = ReportCheater.objects.filter(cheater=cheater).order_by('report')
-        count = 0
-        for report_cheater in report_cheater_list:
-            record = ReportRecord.objects.filter(report_cheater=report_cheater)
-            count += len(record)
-        report_record = {'reports': len(report_cheater_list), 'count': count}
-        cheater.report_record = report_record
-    context = {
-        'cheater_list': cheater_list,
-    }
-    return render(request, 'list.html', context)
-
-def info_page(request, r_id):
-    """Report infomation page."""
-
-    report = Report.objects.get(id=r_id)
-    report.inappropriate_type = INAPPROPRIATE_MAP[report.inappropriate_type]
-    report_cheater_list = ReportCheater.objects.filter(report=report)
-    report.cheaters = ', '.join([rc.cheater.name for rc in report_cheater_list])
-    context = {
-        'report': report
-    }
-    return render(request, 'info.html', context)
-
-@login_required(login_url='/reports/v1/login')
-def manage_report_page(request):
-    """Report management page."""
-    report_list = Report.objects.all()
-    for report in report_list:
-        report.inappropriate_type = INAPPROPRIATE_MAP[report.inappropriate_type]
-        report_cheaters = ReportCheater.objects.filter(report=report)
-        report.cheaters = [rc.cheater for rc in report_cheaters]
-    context = {
-        'report_list': report_list,
-    }
-    return render(request, 'admin.html', context)
-
-@login_required(login_url='/reports/v1/login')
-def manage_user_page(request):
-    """User management page."""
-    return render(request, 'admin.html')
-
-@login_required(login_url='/reports/v1/login')
-def edit_report_page(request, r_id=None):
-    context = {
-        'INAPPROPRIATE_MAP': INAPPROPRIATE_MAP,
-        'STATUS': STATUS,
-        'report': { 'status': 'new'},
-    }
-    if r_id:
-        report = Report.objects.get(id=r_id)
-        reportcheater_list = ReportCheater.objects.filter(report=report)
-        report.cheaters = ', '.join([rc.cheater.name for rc in reportcheater_list])
-        context['report'] = report
-    return render(request, 'manage.html', context)
-
-###############################################################################
-# api 
-
-def api_list(request, user):
+def list(request, user):
     """Reutn all report information."""
     data = {
         'reports': []
@@ -123,10 +46,10 @@ def api_list(request, user):
             report_data['cheaters'].append(cheater)
 
         data['reports'].append(report_data)
-    print(data)	
+	
     return HttpResponse(json.dumps(data))
 
-def api_record(request, agent_name, report_id, cheater_name):
+def record(request, agent_name, report_id, cheater_name):
     """Record agent report spoofagent history."""
     try:
         agent, created = Agent.objects.get_or_create(name=agent_name)
@@ -142,7 +65,7 @@ def api_record(request, agent_name, report_id, cheater_name):
     return HttpResponse('ok')
 
 @login_required(login_url='/reports/v1/login')
-def api_save_report(request):
+def save_report(request):
     if request.method == 'POST':
         if request.POST.get('report_id'):
             report = Report.objects.get(id=request.POST.get('report_id'))
@@ -173,7 +96,7 @@ def api_save_report(request):
     return HttpResponse(status=404)
 
 @login_required(login_url='/reports/v1/login')
-def api_update_agent(request):
+def update_agent(request):
     c_id = request.POST.get('c_id')
     r_id = request.POST.get('r_id')
     status = request.POST.get('status')
@@ -196,5 +119,5 @@ def api_update_agent(request):
 
     return HttpResponse('ok')
 
-def api_extension_version(request):
-    return HttpResponse('0.0.7')
+def extension_version(request):
+    return HttpResponse('0.0.8')
