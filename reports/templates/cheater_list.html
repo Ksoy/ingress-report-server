@@ -1,40 +1,26 @@
-{% extends "home.html" %}
+{% extends 'index.html' %}
 
 {% block other_js %}
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
-{% endblock %}
-
-{% block user_css %}
-{% include "angular/pager.css" %}
+<script src="https://code.angularjs.org/1.4.8/angular.js"></script>
+<script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.0.3.js"></script>
 {% endblock %}
 
 {% block user_js %}
-var ingressApp = angular.module('ingressApp', []);
-ingressApp.controller('IngressController', function IngressController($scope, $http, PagerService) {
+var ingressApp = angular.module('ingressApp', ["ui.bootstrap"]);
+ingressApp.controller('ingressController', function ingressController($scope, $http/*, PagerService*/) {
+  $scope.page = 1;
   $scope.all_cheaters = [];
-  $scope.cheaters = [];
   $http.get('{% url 'reports:cheater_list' %}').
     success(function (data) {
       $scope.all_cheaters = data.cheaters;
-      $scope.setPage(1);
     });
-
-  $scope.pager = {};
-  $scope.setPage = function (page) {
-    if (page < 1 || page > $scope.pager.totalPages) {
-      return;
-    }
-    $scope.pager = PagerService.GetPager($scope.all_cheaters.length, page);
-    $scope.cheaters = $scope.all_cheaters.slice($scope.pager.startIndex, $scope.pager.endIndex + 1);
-  }
 });
 
-{% include "angular/PagerService.js" %}
 {% endblock %}
 
 
 {% block content %}
-<div class="row">
+<div class="row" ng-app="ingressApp" ng-controller="ingressController">
 <div class="col-md-10 col-md-offset-1">
 <div class="panel panel-default" style="text-align:center;">
   <div class="panel-heading">Cheaters...</div>
@@ -53,14 +39,16 @@ ingressApp.controller('IngressController', function IngressController($scope, $h
         <th style="width:40%;">report status</th>
       </tr>
     </thead>
-    <tr ng-repeat="cheater in cheaters | filter:$scope.search_cheater">
+    <tr ng-repeat="cheater in filter_cheaters = (all_cheaters | filter: $scope.search_cheater) | limitTo:10:10*(page-1)">
       <td>{% templatetag openvariable %}cheater.id{% templatetag closevariable %}</td>
       <td>{% templatetag openvariable %}cheater.name{% templatetag closevariable %}</td>
       <td>{% templatetag openvariable %}cheater.status{% templatetag closevariable %}</td>
       <td>reported <b>{% templatetag openvariable %}cheater.report_times{% templatetag closevariable %}</b> times in <b>{% templatetag openvariable %}cheater.report_count{% templatetag closevariable %}</b> reports.</td>
     </tr>
   </table>
-{% include "angular/pager.html" %}
+  <uib-pagination class="pagination-sm pagination" total-items="filter_cheaters.length" ng-model="page"
+    previous-text="&lsaquo;" next-text="&rsaquo;" items-per-page=10></uib-pagination>
+
 </div>
 </div>
 </div>

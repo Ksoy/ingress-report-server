@@ -1,0 +1,130 @@
+{% extends 'index.html' %}
+
+{% block other_js %}
+<script src="https://code.angularjs.org/1.4.8/angular.js"></script>
+<script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.0.3.js"></script>
+{% endblock %}
+
+{% block user_css %}
+  .show_detail {
+    cursor: pointer;
+  }
+  .detail_table tr td:first-child {
+    text-align: right;
+    vertical-align: top;
+    padding-right: 5px;
+    width: 160px;
+  }
+  textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+  }
+{% endblock %}
+
+{% block user_js %}
+var ingressApp = angular.module('ingressApp', ["ui.bootstrap"]);
+ingressApp.controller('ingressController', function ingressController($scope, $http) {
+  $scope.page = 1;
+  $scope.all_reports = [];
+  $http.get('{% url 'reports:report_list' %}').
+    success(function (data) {
+      $scope.all_reports = data.reports;
+      console.log(data.reports);
+    });
+  $scope.showDetail = function(report_id) {
+      console.log(report_id);
+      var detail = $((".report_detail[r_id=" + report_id + "]"));
+      detail.attr("hidden", !detail.attr("hidden"));
+
+      if($(".show_detail[r_id=" + report_id + "]").children('.glyphicon-chevron-down').length) {
+        $(".show_detail[r_id=" + report_id + "]").children('.glyphicon').removeClass('glyphicon-chevron-down');
+        $(".show_detail[r_id=" + report_id + "]").children('.glyphicon').addClass('glyphicon-chevron-up');
+      }
+      else {
+        $(".show_detail[r_id=" + report_id + "]").children('.glyphicon').removeClass('glyphicon-chevron-up');
+        $(".show_detail[r_id=" + report_id + "]").children('.glyphicon').addClass('glyphicon-chevron-down');
+      }
+  };
+  $scope.updateCheater = function(cheater_id, status) {
+    var csrf = $('input[name=csrfmiddlewaretoken]').val();
+    var data = {'status': status,
+                'cheater_id': cheater_id,
+                'csrfmiddlewaretoken': csrf};
+    $.post('/reports/v1/api/updateagent', data, function(res) {
+      location.reload();
+    });
+  };
+});
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="row" ng-app="ingressApp" ng-controller="ingressController">
+<div class="col-md-10 col-md-offset-1">
+<div class="panel panel-default" style="text-align:center;">
+  <div class="panel-heading" style="text-align:right;">
+    <div class="btn-group">
+      <a href="{% url 'reports:report_manage_page' r_id='' %}"><div class="btn btn-info">Add</div></a>
+    </div>
+  </div>
+  <table class="table" style="table-layout:fixed;">
+    <thead>
+      <tr>
+        <th width="5%">#</th>
+        <th width="70%">subject</th>
+        <th width="15%">status</th>
+        <th width="10%">detail</th>
+      </tr>
+    </thead>
+    <tbody ng-repeat="report in filter_reports = (all_reports) | limitTo:10:10*(page-1)">
+    <tr>
+      <td>{% templatetag openvariable %}report.report_id{% templatetag closevariable %}</td>
+      <td style="max-width:100%;overflow:hidden;text-overflow:ellipsis;">{% templatetag openvariable %}report.subject{% templatetag closevariable %}</td>
+      <td>{% templatetag openvariable %}report.status{% templatetag closevariable %}</td>
+      <td class="show_detail" r_id="{% templatetag openvariable %}report.report_id{% templatetag closevariable %}" ng-click="showDetail(report.report_id)"><span class="glyphicon glyphicon-chevron-down"></span></td>
+    </tr>
+    <tr class="report_detail" r_id="{% templatetag openvariable %}report.report_id{% templatetag closevariable %}" hidden> 
+      <td colspan="4">
+        <table class="detail_table" style="width:100%;">
+          <tr>
+            <td><label>Subject:</label></td>
+            <td style="max-width:100;word-wrap:break-word;">{% templatetag openvariable %}report.subject{% templatetag closevariable %}</td>
+          </tr>
+          <tr>
+            <td><label>Description:</label></td>
+            <td><textarea rows="10" readonly>{% templatetag openvariable %}report.description{% templatetag closevariable %}</textarea></td>
+          </tr>
+          <tr>
+            <td><label>Inappropriate Type:</label></td>
+            <td>{% templatetag openvariable %}report.inappropriate_type{% templatetag closevariable %}</td>
+          </tr>
+          <tr ng-repeat="cheater in report.cheaters">
+            <td rows="{% templatetag openvariable %}report.cheaters.length{% templatetag closevariable %}">
+              <label ng-if="cheater === report.cheaters[0]">Agents:</label>
+            </td>
+            <td>{% templatetag openvariable %}cheater.name{% templatetag closevariable %} ({% templatetag openvariable %}cheater.status{% templatetag closevariable %}) 
+              <button class="burn_agent" ng-if="cheater.status === 'alive'" ng-click="updateCheater(cheater.cheater_id, 'burned')">burned</button>
+              <button class="delete_agent" ng-if="cheater.status === 'alive'" ng-click="updateCheater(cheater.cheater_id, 'delete')">delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td><label>Status:</label></td>
+            <td>{% templatetag openvariable %}report.status{% templatetag closevariable %}</td>
+          </tr>
+          <tr>
+            <td></td> 
+            <td style="text-align:right;"><a href="{% url 'reports:report_manage_page' r_id='' %}{% templatetag openvariable %}report.report_id{% templatetag closevariable %}" class="btn btn-success">modify</a></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <uib-pagination class="pagination-sm pagination" total-items="filter_reports.length" ng-model="page"
+    previous-text="&lsaquo;" next-text="&rsaquo;" items-per-page=10></uib-pagination>
+</div>
+</div>
+</div>
+
+{% endblock %}

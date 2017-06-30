@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect
 from django.template import loader
 
 from .models import Agent, Cheater, Report, ReportCheater, ReportFile, ReportRecord
+from .config import INAPPROPRIATE_MAP, EXTENSION_VERSION
 
 def cheater_list(request):
     data = {
@@ -47,7 +48,7 @@ def report_list(request, user=None):
             'subject': report.subject,
             'description': report.description,
             'cheaters': [],
-            'inappropriate_type': report.inappropriate_type,
+            'inappropriate_type': INAPPROPRIATE_MAP[report.inappropriate_type],
             'filename': filename,
             'status': report.status,
         }
@@ -62,6 +63,7 @@ def report_list(request, user=None):
                 except:
                     pass
             cheater = {
+                'cheater_id': report_cheater.cheater.id,
                 'name': report_cheater.cheater.name,
                 'status': status,
             }
@@ -114,16 +116,15 @@ def save_report(request):
             reportcheater, is_create = ReportCheater.objects.get_or_create(cheater=cheater, report=report)
             reportcheater.save()
 
-        return redirect('reports:manage_report_page')
+        return redirect('reports:reports_page')
     return HttpResponse(status=404)
 
 @login_required(login_url='/reports/v1/login')
 def update_agent(request):
-    c_id = request.POST.get('c_id')
-    r_id = request.POST.get('r_id')
+    cheater_id = request.POST.get('cheater_id')
     status = request.POST.get('status')
 
-    cheater = Cheater.objects.get(id=c_id)
+    cheater = Cheater.objects.get(id=cheater_id)
     cheater.status = status
     cheater.save()
    
@@ -132,7 +133,7 @@ def update_agent(request):
         rcs = ReportCheater.objects.filter(report=rc.report)
         flag = True
         for rc_ in rcs:
-            if rc_.cheater.status == 'new':
+            if rc_.cheater.status == 'alive':
                 flag = False
                 break
         if flag:
@@ -142,4 +143,4 @@ def update_agent(request):
     return HttpResponse('ok')
 
 def extension_version(request):
-    return HttpResponse('0.0.8')
+    return HttpResponse(EXTENSION_VERSION)
