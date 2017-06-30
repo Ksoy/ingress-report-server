@@ -13,10 +13,19 @@ from django.template import loader
 from .models import Agent, Cheater, Report, ReportCheater, ReportFile, ReportRecord
 from .config import INAPPROPRIATE_MAP, EXTENSION_VERSION
 
+@login_required(login_url='/reports/v1/login')
 def user_list(request):
     data = {
-      'users': serializers.serialize('json', User.objects.all())
+      'users': []
     }
+    for user in User.objects.all():
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'is_superuser': user.is_superuser,
+        }
+        data['users'].append(user_data)
+
     return HttpResponse(json.dumps(data))
 
 def cheater_list(request):
