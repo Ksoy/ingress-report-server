@@ -20,7 +20,7 @@ def user_list(request):
     }
     for user in User.objects.all():
         user_data = {
-            'id': user.id
+            'id': user.id,
             'is_superuser': user.is_superuser,
         }
         data['users'].append(user_data)
