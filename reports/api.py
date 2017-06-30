@@ -167,7 +167,7 @@ def save_report(request):
     return HttpResponse(status=404)
 
 @login_required(login_url='/reports/v1/login')
-def update_agent(request):
+def update_cheater(request):
     cheater_id = request.POST.get('cheater_id')
     status = request.POST.get('status')
 

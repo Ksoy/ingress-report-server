@@ -51,7 +51,7 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
     var data = {'status': status,
                 'cheater_id': cheater_id,
                 'csrfmiddlewaretoken': csrf};
-    $.post('/reports/v1/api/updateagent', data, function(res) {
+    $.post('{% url 'reports:update_cheater'  %}', data, function(res) {
       location.reload();
     });
   };

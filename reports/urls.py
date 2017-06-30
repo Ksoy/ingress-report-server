@@ -8,9 +8,10 @@ from . import api
 
 app_name = 'reports'
 urlpatterns = [
-    url(r'^v1/$', views.home, name='home_page'),
     url(r'^v1/login$', login, {'template_name': 'login.html'}, name='login_page'),
     url(r'^v1/logout$', logout, name='logout_page'),
+
+    url(r'^v1/$', views.home, name='home_page'),
     url(r'^v1/cheaters$', views.cheaters, name='cheaters_page'),
     url(r'^v1/reports$', views.reports, name='reports_page'),
     url(r'^v1/users$', views.users, name='users_page'),
@@ -22,7 +23,7 @@ urlpatterns = [
     url(r'^v1/api/report_list/(?P<user>[^/]+)$', api.agent_report_list, name='agent_report_list'),
     url(r'^v1/api/record/(?P<agent_name>[^/]+)/(?P<report_id>[0-9]+)/(?P<cheater_name>[a-zA-Z0-9]+)$', api.record, name='record'),
     url(r'^v1/api/savereport$', api.save_report, name='save_report'),
-    url(r'^v1/api/updateagent$', api.update_agent, name='update_agent'),
+    url(r'^v1/api/updatecheater$', api.update_cheater, name='update_cheater'),
     url(r'^v1/api/extension_version$', api.extension_version, name='extension_version'),
 ]
 
