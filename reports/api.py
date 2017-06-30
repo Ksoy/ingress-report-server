@@ -85,7 +85,7 @@ def report_list(request, user):
     data = {
         'reports': []
     }
-    for report in Report.objects.filter():
+    for report in Report.objects.filter(status='new'):
         filename = None
         if report.report_file:
             filename = report.report_file.upload_file.name
@@ -98,8 +98,11 @@ def report_list(request, user):
             'filename': filename,
             'status': report.status,
         }
+        flag = False
         for report_cheater in ReportCheater.objects.filter(report=report):
             status = report_cheater.cheater.status
+            if status == 'alive':
+                flag = True
             if status != 'burned':
                 try:
                     agent = Agent.objects.get(name=user)
@@ -114,8 +117,8 @@ def report_list(request, user):
                 'status': status,
             }
             report_data['cheaters'].append(cheater)
-
-        data['reports'].append(report_data)
+        if flag:
+            data['reports'].append(report_data)
 	
     return HttpResponse(json.dumps(data))
 
