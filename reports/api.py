@@ -20,8 +20,7 @@ def user_list(request):
     }
     for user in User.objects.all():
         user_data = {
-            'id': user.id,
-            'username': user.username,
+            'id': user.id
             'is_superuser': user.is_superuser,
         }
         data['users'].append(user_data)
@@ -95,7 +94,7 @@ def report_list(request, user):
             'subject': report.subject,
             'description': report.description,
             'cheaters': [],
-            'inappropriate_type': INAPPROPRIATE_MAP[report.inappropriate_type],
+            'inappropriate_type': report.inappropriate_type,
             'filename': filename,
             'status': report.status,
         }
