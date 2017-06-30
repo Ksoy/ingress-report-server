@@ -72,12 +72,19 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
     <thead>
       <tr>
         <th width="5%">#</th>
-        <th width="70%">subject</th>
-        <th width="15%">status</th>
+        <th width="70%">subject  <input style="font-weight:normal;line-height:normal;" placeholder="Search subject" ng-model="$scope.search_report.subject"></th>
+        <th width="15%">status
+          <select ng-model="$scope.search_report.status">
+            <option value="" selected>all</option>
+            <option value="new">new</option>
+            <option value="close">close</option>
+            <option value="delete">delete</option>
+          </select>
+        </th>
         <th width="10%">detail</th>
       </tr>
     </thead>
-    <tbody ng-repeat="report in filter_reports = (all_reports) | limitTo:10:10*(page-1)">
+    <tbody ng-repeat="report in filter_reports = (all_reports | filter: $scope.search_report) | limitTo:10:10*(page-1)">
     <tr>
       <td>{% templatetag openvariable %}report.report_id{% templatetag closevariable %}</td>
       <td style="max-width:100%;overflow:hidden;text-overflow:ellipsis;">{% templatetag openvariable %}report.subject{% templatetag closevariable %}</td>
