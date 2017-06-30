@@ -49,7 +49,7 @@ def cheater_list(request):
     return HttpResponse(json.dumps(data))
 
 @login_required(login_url='/reports/v1/login')
-def all_report_list(request):
+def report_list(request):
     """Reutn all report information."""
     data = {
         'reports': []
@@ -80,7 +80,7 @@ def all_report_list(request):
 	
     return HttpResponse(json.dumps(data))
 
-def report_list(request, user):
+def agent_report_list(request, user):
     """Reutn all report information."""
     data = {
         'reports': []
@@ -100,23 +100,21 @@ def report_list(request, user):
         }
         flag = False
         for report_cheater in ReportCheater.objects.filter(report=report):
-            status = report_cheater.cheater.status
-            if status == 'alive':
-                flag = True
-            if status != 'burned':
+            if 'alive' == report_cheater.cheater.status:
                 try:
                     agent = Agent.objects.get(name=user)
                     records = ReportRecord.objects.filter(agent=agent, report_cheater=report_cheater)
                     if len(records) > 0:
-                        status = 'Done'
+                        continue
                 except:
                     pass
-            cheater = {
-                'cheater_id': report_cheater.cheater.id,
-                'name': report_cheater.cheater.name,
-                'status': status,
-            }
-            report_data['cheaters'].append(cheater)
+                flag = True
+                cheater = {
+                    'cheater_id': report_cheater.cheater.id,
+                    'name': report_cheater.cheater.name,
+                    'status': report_cheater.cheater.status,
+                }
+                report_data['cheaters'].append(cheater)
         if flag:
             data['reports'].append(report_data)
 	
