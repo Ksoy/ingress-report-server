@@ -28,13 +28,20 @@ def users(request):
     return render(request, 'user_list.html')
 
 @login_required(login_url='/reports/v1/login')
+def user_create(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        User.objects.create_superuser(username=username, password=password, email='')
+        return redirect('reports:users_page')
+    return render(request, 'user_create.html')
+
+@login_required(login_url='/reports/v1/login')
 def user_manage(request, user_id, context=None, *args, **kwargs):
     if int(user_id) != int(request.user.id):
         return redirect('reports:home_page')
 
-    if request.method == 'GET':
-        return render(request, 'user_profile.html')
-    elif request.method == 'POST':
+    if request.method == 'POST':
         user_id = request.POST['id']
         user_name = request.POST['username']
         old_password = request.POST['old_password']
@@ -55,6 +62,8 @@ def user_manage(request, user_id, context=None, *args, **kwargs):
         user.set_password(new_password)
         user.save()
         return render(request, 'user_profile.html', {'success': True})
+
+    return render(request, 'user_profile.html')
 
 @login_required(login_url='/reports/v1/login')
 def report_manage(request, r_id=None):

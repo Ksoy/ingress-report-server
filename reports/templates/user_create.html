@@ -1,0 +1,33 @@
+{% extends 'index.html' %} 
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4 col-md-offset-4">
+    <div class="panel panel-default">
+      <div class="panel-heading" style="text-align:center;">
+        <b>User Profile</b>
+      </div>
+      <form method="post" style="margin:0px;">
+        {% csrf_token %}
+        <table class="table" style="margin:0px;">
+          <tr>
+            <td><label>Usesrname:</label></td>
+            <td><input type="text" name="username"></td>
+          </tr>
+          <tr>
+            <td><label>Password:</label></td>
+            <td><input type="password" name="password"></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><button type="submit">Save</button></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    {% if error %}
+      <b style="color:red;">{{error}}</b>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

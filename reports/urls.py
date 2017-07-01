@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^v1/cheaters$', views.cheaters, name='cheaters_page'),
     url(r'^v1/reports$', views.reports, name='reports_page'),
     url(r'^v1/users$', views.users, name='users_page'),
+    url(r'^v1/manage/user/create$', views.user_create, name='user_create_page'),
     url(r'^v1/manage/user/(?P<user_id>[0-9]*)$', views.user_manage, name='user_manage_page'),
     url(r'^v1/manage/report/(?P<r_id>[0-9]*)$', views.report_manage, name='report_manage_page'),
 

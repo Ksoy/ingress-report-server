@@ -15,7 +15,6 @@ from .config import INAPPROPRIATE_MAP, EXTENSION_VERSION
 
 @login_required(login_url='/reports/v1/login')
 def user_list(request):
-    print(request.user.id)
     data = {
       'users': []
     }
