@@ -18,6 +18,7 @@
       {% if user.is_anonymous %}
         <li><a href="{% url 'reports:login_page' %}">login</a></li>
       {% else %}
+        <li><a href="{% url 'reports:user_manage_page' user_id=user.id %}">profile</a></li>
         <li><a href="{% url 'reports:logout_page' %}">logout</a></li>
       {% endif %}
     </ul>

@@ -1,0 +1,47 @@
+{% extends 'index.html' %} 
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4 col-md-offset-4">
+    <div class="panel panel-default">
+      <div class="panel-heading" style="text-align:center;">
+        <b>User Profile</b>
+      </div>
+      <form method="post" style="margin:0px;">
+        {% csrf_token %}
+        <input name="id" value="{{user.id}}" hidden />
+        <input name="username" value="{{user.username}}" hidden />
+        <table class="table" style="margin:0px;">
+          <tr>
+            <td><label>Usesrname:</label></td>
+            <td><label>{{user.username}}</label></td>
+          </tr>
+          <tr>
+            <td><label>Old password:</label></td>
+            <td><input type="password" name="old_password"></td>
+          </tr>
+          <tr>
+            <td><label>New password:</label></td>
+            <td><input type="password" name="new_password"></td>
+          </tr>
+          <tr>
+            <td><label>New password check:</label></td>
+            <td><input type="password" name="new_password_c"></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><button type="submit">Save</button></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    {% if success %}
+      <b style="color:green;">Change password success.<br>Please login again with new password.</b>
+      <script>setTimeout(function(){location.href="{% url 'reports:login_page' %}"} , 3000);</script>
+    {% endif %}
+    {% if error %}
+      <b style="color:red;">{{error}}</b>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

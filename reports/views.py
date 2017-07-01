@@ -4,6 +4,7 @@ import ntpath
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -25,6 +26,35 @@ def reports(request):
 @login_required(login_url='/reports/v1/login')
 def users(request):
     return render(request, 'user_list.html')
+
+@login_required(login_url='/reports/v1/login')
+def user_manage(request, user_id, context=None, *args, **kwargs):
+    if int(user_id) != int(request.user.id):
+        return redirect('reports:home_page')
+
+    if request.method == 'GET':
+        return render(request, 'user_profile.html')
+    elif request.method == 'POST':
+        user_id = request.POST['id']
+        user_name = request.POST['username']
+        old_password = request.POST['old_password']
+        new_password = request.POST['new_password']
+        new_password_c = request.POST['new_password_c']
+
+        if new_password != new_password_c:
+            return render(request, 'user_profile.html', {'error': 'New password not match.'})
+
+        try:
+            user = User.objects.get(id=user_id, username=user_name)
+        except:
+            return render(request, 'user_profile.html', {'error': 'User not find.'})
+
+        if not user.check_password(old_password):
+            return render(request, 'user_profile.html', {'error': 'Wrong password.'})
+
+        user.set_password(new_password)
+        user.save()
+        return render(request, 'user_profile.html', {'success': True})
 
 @login_required(login_url='/reports/v1/login')
 def report_manage(request, r_id=None):
