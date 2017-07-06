@@ -100,6 +100,7 @@ def agent_report_list(request, user):
             'inappropriate_type': report.inappropriate_type,
             'filename': filename,
             'status': report.status,
+            'creator': report.creator.username,
         }
         flag = False
         for report_cheater in ReportCheater.objects.filter(report=report):
