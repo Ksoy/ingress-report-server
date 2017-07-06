@@ -33,7 +33,6 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
       console.log(data.reports);
     });
   $scope.showDetail = function(report_id) {
-      console.log(report_id);
       var detail = $((".report_detail[r_id=" + report_id + "]"));
       detail.attr("hidden", !detail.attr("hidden"));
 
@@ -118,6 +117,14 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
           <tr>
             <td><label>Status:</label></td>
             <td>{% templatetag openvariable %}report.status{% templatetag closevariable %}</td>
+          </tr>
+          <tr>
+            <td><label>Creator:</label></td>
+            <td>{% templatetag openvariable %}report.creator{% templatetag closevariable %}</td>
+          </tr>
+          <tr>
+            <td><label>Create time:</label></td>
+            <td>{% templatetag openvariable %}report.create_time{% templatetag closevariable %}</td>
           </tr>
           <tr>
             <td></td> 

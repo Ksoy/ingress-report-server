@@ -67,6 +67,8 @@ def report_list(request):
             'inappropriate_type': INAPPROPRIATE_MAP[report.inappropriate_type],
             'filename': filename,
             'status': report.status,
+            'creator': report.creator.username,
+            'create_time': report.create_time.strftime("%Y-%m-%d %H:%M:%S"),
         }
         for report_cheater in ReportCheater.objects.filter(report=report):
             status = report_cheater.cheater.status
@@ -142,7 +144,7 @@ def save_report(request):
         if request.POST.get('report_id'):
             report = Report.objects.get(id=request.POST.get('report_id'))
         else:
-            report = Report()
+            report = Report(creator=request.user)
 
         report.subject = request.POST.get('subject')
         report.description = request.POST.get('description')

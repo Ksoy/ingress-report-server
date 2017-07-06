@@ -37,7 +37,7 @@ def user_create(request):
     return render(request, 'user_create.html')
 
 @login_required(login_url='/reports/v1/login')
-def user_manage(request, user_id, context=None, *args, **kwargs):
+def user_manage(request, user_id):
     if int(user_id) != int(request.user.id):
         return redirect('reports:home_page')
 

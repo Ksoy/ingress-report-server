@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
+from datetime import timedelta
 import uuid
 import os
 
@@ -39,6 +41,17 @@ class Report(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
     cheaters = []
 
+    create_time = models.DateTimeField(editable=False)
+    creator = models.ForeignKey(User, editable=False)
+    expire_date = models.DateField(null=True)
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.create_time = timezone.now()
+            self.expire_date = timezone.now() + timedelta(days=3)
+        return super(Report, self).save(*args, **kwargs)
+
 class Cheater(models.Model):
     STATUS_CHOICES = (
         ('new', 'new'),
@@ -48,6 +61,17 @@ class Cheater(models.Model):
 
     name = models.CharField(max_length=200)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='alive')
+
+    create_time = models.DateTimeField(editable=False)
+    burned_time = models.DateTimeField(null=True)
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.create_time = timezone.now()
+        if 'burned' == self.status:
+            self.burned_time = timezone.now()
+        return super(Cheater, self).save(*args, **kwargs)
 
 class ReportCheater(models.Model):
     report = models.ForeignKey(Report)
