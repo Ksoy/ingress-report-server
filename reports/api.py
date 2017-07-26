@@ -32,7 +32,7 @@ def cheater_list(request):
     data = {
       'cheaters': []
     }
-    for cheater in Cheater.objects.filter():
+    for cheater in Cheater.objects.filter()[::-1]:
         report_cheaters = ReportCheater.objects.filter(cheater=cheater).order_by('report')
         times = 0
         for report_cheater in report_cheaters:
@@ -55,7 +55,7 @@ def report_list(request):
     data = {
         'reports': []
     }
-    for report in Report.objects.filter():
+    for report in Report.objects.filter()[::-1]:
         filename = None
         if report.report_file:
             filename = report.report_file.upload_file.name

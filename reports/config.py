@@ -1,4 +1,4 @@
-EXTENSION_VERSION = 0.1
+EXTENSION_VERSION = 0.13
 
 INAPPROPRIATE_MAP = {
     'abuse_ma': 'Multiple accounts/account sharing',

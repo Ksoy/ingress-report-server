@@ -5,13 +5,13 @@ from datetime import timedelta
 import uuid
 import os
 
-def user_directory_path(instance, filename):
+def user_file_name(instance, filename):
     instance.ori_name = filename
     _, ext = os.path.splitext(filename)
     return '{}{}'.format(str(uuid.uuid4()), ext)
 
 class ReportFile(models.Model):
-    upload_file = models.FileField(upload_to=user_directory_path)
+    upload_file = models.FileField(upload_to=user_file_name)
     ori_name = models.CharField(max_length=50)
     upload_time = models.DateTimeField('date uploaded', editable=False)
 
