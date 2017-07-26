@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -79,7 +78,7 @@ WSGI_APPLICATION = 'ingress_report.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': '/home/www/db.sqlite3',
     }
 }
 
@@ -120,10 +119,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = '/static/'
-MEDIA_ROOT = 'reports/static/files/'
-CORS_ORIGIN_ALLOW_ALL = True
-LOGIN_REDIRECT_URL = '/reports/v1/manage_report'
+#STATIC_URL = '/static/'
+#STATIC_ROOT = '/static/'
+MEDIA_ROOT = '/home/www/files/'#'reports/static/files/'
+#CORS_ORIGIN_ALLOW_ALL = True
+LOGIN_REDIRECT_URL = '/reports/v1/reports'
 LOGOUT_REDIRECT_URL = '/reports/v1/'
 FILE_UPLOAD_PERMISSIONS = 0o644
