@@ -119,6 +119,10 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
             <td>{% templatetag openvariable %}report.status{% templatetag closevariable %}</td>
           </tr>
           <tr>
+            <td><label>File:</label></td>
+            <td><a href="/files/{% templatetag openvariable %}report.filename{% templatetag closevariable %}">{% templatetag openvariable %}report.filename{% templatetag closevariable %}</a></td>
+          </tr>
+          <tr>
             <td><label>Creator:</label></td>
             <td>{% templatetag openvariable %}report.creator{% templatetag closevariable %}</td>
           </tr>

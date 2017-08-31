@@ -50,7 +50,7 @@
   <div class="form-group">
     <label for="upload_file">Select file to upload:</label>
     <input type="file" name="upload_file" id="upload_file"></input>
-    <label id="upload_file_label">{{report.report_file.upload_file.name}}</label>
+    <a href="/files/{{report.report_file.upload_file.name}}"><label id="upload_file_label">{{report.report_file.upload_file.name}}</label></a>
     <input name="old_file_name" id="upload_file_name" value="{{report.report_file.upload_file.name}}" hidden></input>
   </div>
     <button type="submit" class="btn btn-primary">Save</button>
