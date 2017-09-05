@@ -14,7 +14,8 @@ from .models import Agent, Cheater, Report, ReportCheater, ReportFile, ReportRec
 from .config import INAPPROPRIATE_MAP, REPORT_STATUS_LIST
 
 def home(request):
-    return render(request, 'home.html') 
+    burns = len(Cheater.objects.filter(status='burned'))
+    return render(request, 'home.html', {'burns': burns}) 
 
 def cheaters(request):
     return render(request, 'cheater_list.html')
