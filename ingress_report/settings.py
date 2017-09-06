@@ -121,8 +121,9 @@ USE_TZ = True
 
 #STATIC_URL = '/static/'
 #STATIC_ROOT = '/static/'
-MEDIA_ROOT = '/home/www/files/'#'reports/static/files/'
+#MEDIA_ROOT = '/home/www/files/'#'reports/static/files/'
+#FILE_UPLOAD_PERMISSIONS = 0o644
+
 #CORS_ORIGIN_ALLOW_ALL = True
 LOGIN_REDIRECT_URL = '/reports/v1/reports'
 LOGOUT_REDIRECT_URL = '/reports/v1/'
-FILE_UPLOAD_PERMISSIONS = 0o644
