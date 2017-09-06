@@ -7,9 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core import serializers
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect#, render
 from django.template import loader
 
+from .render import render
 from .models import Agent, Cheater, Report, ReportCheater, ReportFile, ReportRecord
 from .config import INAPPROPRIATE_MAP, REPORT_STATUS_LIST
 
