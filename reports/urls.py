@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^v1/users$', views.users, name='users_page'),
     url(r'^v1/manage/user/create$', views.user_create, name='user_create_page'),
     url(r'^v1/manage/user/(?P<user_id>[0-9]*)$', views.user_manage, name='user_manage_page'),
+    url(r'^v1/manage/agent/(?P<a_id>[0-9]*)$', views.agent_manage, name='agent_manage_page'),
     url(r'^v1/manage/report/(?P<r_id>[0-9]*)$', views.report_manage, name='report_manage_page'),
 
 
@@ -28,6 +29,7 @@ urlpatterns = [
     url(r'^v1/api/report_list/(?P<user>[^/]+)$', api.agent_report_list, name='agent_report_list'),
 
     url(r'^v1/api/record/(?P<agent_name>[^/]+)/(?P<report_id>[0-9]+)/(?P<cheater_name>[a-zA-Z0-9]+)$', api.record, name='record'),
+    url(r'^v1/api/saveagent$', api.save_agent, name='save_agent'),
     url(r'^v1/api/savereport$', api.save_report, name='save_report'),
     url(r'^v1/api/updatecheater$', api.update_cheater, name='update_cheater'),
     url(r'^v1/api/extension_version$', api.extension_version, name='extension_version'),

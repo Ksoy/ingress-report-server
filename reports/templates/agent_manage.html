@@ -1,0 +1,41 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4 col-md-offset-4">
+    <div class="panel panel-default">
+      <div class="panel-heading" style="text-align:center;">
+        <b>Agent Profile</b>
+      </div>
+      <form action="{% url 'reports:save_agent' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table class="table" style="margin:0px;">
+          <input name='id' value="{{agent.id}}" hidden></input>
+          <tr>
+            <td width="30%"><label for="name">Agent</label></td>
+            <td width="70%">
+              {% if agent.id %}
+                <input name="name" value="{{agent.name}}" hidden />
+                <label>{{agent.name}}</label>
+              {% else %}
+                <input type="text" name="name" required></input>
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td><label for="reliable">Reliable</label></td>
+            <td><input type="checkbox" name="is_reliable" value="True" {% if agent.is_reliable %}checked{% endif %}></input></td>
+          </tr>
+  
+          <tr>
+            <td></td>
+            <td><button type="submit" class="btn btn-primary">Save</button></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

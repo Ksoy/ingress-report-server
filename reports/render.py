@@ -10,7 +10,7 @@ user_agents_tablets_search_regex = re.compile(u"(?:ipad|tablet)", re.IGNORECASE)
 
 
 def render(request, template_name, context=None, content_type=None, status=None, using=None):
-    print('RENDER')
+    print('render.py: RENDER')
     user_agent = request.META.get('HTTP_USER_AGENT')
 
     if user_agents_tablets_search_regex.search(user_agent):

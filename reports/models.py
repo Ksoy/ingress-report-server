@@ -39,6 +39,7 @@ class Report(models.Model):
     inappropriate_type = models.CharField(max_length=20, choices=INAPPROPRIATE_TYPE_CHOICES)
     report_file = models.ForeignKey(ReportFile, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
+    is_secret = models.BooleanField(default=False)
     cheaters = []
 
     create_time = models.DateTimeField(editable=False)
@@ -79,6 +80,7 @@ class ReportCheater(models.Model):
 
 class Agent(models.Model):
     name = models.CharField(max_length=200)    
+    is_reliable = models.BooleanField(default=False)
 
 class ReportRecord(models.Model):
     agent = models.ForeignKey(Agent)

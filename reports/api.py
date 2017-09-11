@@ -30,7 +30,9 @@ def agent_list(request):
     }
     for agent in Agent.objects.all():
         agent_data = {
+            'id': agent.id,
             'name': agent.name,
+            'is_reliable': agent.is_reliable,
         }
         data['agents'].append(agent_data)
 
@@ -96,6 +98,11 @@ def agent_report_list(request, user):
     data = {
         'reports': []
     }
+    agent = None
+    try:
+        agent = Agent.objects.get(name=user)
+    except:
+        pass
     for report in Report.objects.filter(status='new'):
         filename = None
         if report.report_file:
@@ -113,13 +120,9 @@ def agent_report_list(request, user):
         flag = False
         for report_cheater in ReportCheater.objects.filter(report=report):
             if 'alive' == report_cheater.cheater.status:
-                try:
-                    agent = Agent.objects.get(name=user)
-                    records = ReportRecord.objects.filter(agent=agent, report_cheater=report_cheater)
-                    if len(records) > 0:
-                        continue
-                except:
-                    pass
+                records = ReportRecord.objects.filter(agent=agent, report_cheater=report_cheater)
+                if len(records) > 0:
+                    continue
                 flag = True
                 cheater = {
                     'cheater_id': report_cheater.cheater.id,
@@ -146,6 +149,21 @@ def record(request, agent_name, report_id, cheater_name):
         return HttpResponse('false')
 
     return HttpResponse('ok')
+
+@login_required(login_url='/reports/v1/login')
+def save_agent(request):
+    if request.method == 'POST':
+        if request.POST.get('id'):
+            agent = Agent.objects.get(id=request.POST.get('id'))
+        else:
+            agent = Agent()
+
+        agent.name = request.POST.get('name')
+        agent.is_reliable = (request.POST.get('is_reliable') is not None)
+        agent.save()
+
+        return redirect('reports:agents_page')
+    return HttpResponse(status=404)
 
 @login_required(login_url='/reports/v1/login')
 def save_report(request):

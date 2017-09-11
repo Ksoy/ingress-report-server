@@ -11,7 +11,7 @@ from django.shortcuts import redirect#, render
 from django.template import loader
 
 from .render import render
-from .models import Cheater, Report, ReportCheater
+from .models import Agent, Cheater, Report, ReportCheater
 from .config import INAPPROPRIATE_MAP, REPORT_STATUS_LIST
 
 def home(request):
@@ -70,6 +70,15 @@ def user_manage(request, user_id):
         return render(request, 'user_profile.html', {'success': True})
 
     return render(request, 'user_profile.html')
+
+@login_required(login_url='/reports/v1/login')
+def agent_manage(request, a_id=None):
+    context = {
+        'agent': { 'is_reliable': False},
+    }
+    if a_id:
+        context['agent'] = Agent.objects.get(id=a_id)
+    return render(request, 'agent_manage.html', context)
 
 @login_required(login_url='/reports/v1/login')
 def report_manage(request, r_id=None):

@@ -22,8 +22,12 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
 {% block content %}
 <div class="row" ng-app="ingressApp" ng-controller="ingressController">
 <div class="col-md-10 col-md-offset-1">
-<div class="panel panel-default" style="text-align:center;">
-  <div class="panel-heading">Agents</div>
+<div class="panel panel-default"style="text-align:right;">
+  <div class="panel-heading">
+    <div class="btn-group">
+      <a href="{% url 'reports:agent_manage_page' a_id='' %}"><div class="btn btn-info">Add</div></a>
+    </div>
+  </div>
   <table class="table">
     <thead>
       <tr>
@@ -33,9 +37,13 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
       </tr>
     </thead>
     <tr ng-repeat="agent in filter_agents = (all_agents | filter: $scope.search_agent) | limitTo:10:10*(page-1)">
-      <td>id</td>
-      <td>{% templatetag openvariable %}agent.name{% templatetag closevariable %}</td>
-      <td>True</td>
+      <td>{% templatetag openvariable %}agent.id{% templatetag closevariable %}</td>
+      <td>
+        <a href="{% url 'reports:agent_manage_page' a_id='' %}{% templatetag openvariable %}agent.id{% templatetag closevariable %}">
+          {% templatetag openvariable %}agent.name{% templatetag closevariable %}
+        </a>
+      </td>
+      <td>{% templatetag openvariable %}agent.is_reliable{% templatetag closevariable %}</td>
     </tr>
   </table>
   <uib-pagination class="pagination-sm pagination" total-items="filter_agents.length" ng-model="page"
