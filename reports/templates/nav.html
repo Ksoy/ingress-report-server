@@ -11,6 +11,7 @@
       {% if user.is_anonymous %}
       {% else %}
       <li><a href="{% url 'reports:reports_page' %}">reports</a></li>
+      <li><a href="{% url 'reports:agents_page' %}">agents</a></li>
       <li><a href="{% url 'reports:users_page' %}">users</a></li>
       {% endif %}
     </ul>

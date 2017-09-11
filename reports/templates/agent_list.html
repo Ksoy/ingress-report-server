@@ -1,0 +1,47 @@
+{% extends 'index.html' %}
+
+{% block other_js %}
+<script src="https://code.angularjs.org/1.4.8/angular.js"></script>
+<script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.0.3.js"></script>
+{% endblock %}
+
+{% block user_js %}
+var ingressApp = angular.module('ingressApp', ["ui.bootstrap"]);
+ingressApp.controller('ingressController', function ingressController($scope, $http/*, PagerService*/) {
+  $scope.page = 1;
+  $scope.all_agents = [];
+  $http.get('{% url 'reports:agent_list' %}').
+    success(function (data) {
+      $scope.all_agents = data.agents;
+    });
+});
+
+{% endblock %}
+
+
+{% block content %}
+<div class="row" ng-app="ingressApp" ng-controller="ingressController">
+<div class="col-md-10 col-md-offset-1">
+<div class="panel panel-default" style="text-align:center;">
+  <div class="panel-heading">Agents</div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th style="width:5%;">#</th>
+        <th style="width:70%;">name  <input style="font-weight:normal;line-height:normal;" placeholder="Search name" ng-model="$scope.search_agent.name"></th>
+        <th stVyle="width:25%;">reliable</th>
+      </tr>
+    </thead>
+    <tr ng-repeat="agent in filter_agents = (all_agents | filter: $scope.search_agent) | limitTo:10:10*(page-1)">
+      <td>id</td>
+      <td>{% templatetag openvariable %}agent.name{% templatetag closevariable %}</td>
+      <td>True</td>
+    </tr>
+  </table>
+  <uib-pagination class="pagination-sm pagination" total-items="filter_agents.length" ng-model="page"
+    previous-text="&lsaquo;" next-text="&rsaquo;" items-per-page=10></uib-pagination>
+
+</div>
+</div>
+</div>
+{% endblock %}

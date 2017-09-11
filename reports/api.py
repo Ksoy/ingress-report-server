@@ -23,6 +23,19 @@ def user_list(request):
 
     return HttpResponse(json.dumps(data))
 
+@login_required(login_url='/reports/v1/login')
+def agent_list(request):
+    data = {
+        'agents': []
+    }
+    for agent in Agent.objects.all():
+        agent_data = {
+            'name': agent.name,
+        }
+        data['agents'].append(agent_data)
+
+    return HttpResponse(json.dumps(data))
+
 def cheater_list(request):
     data = {
       'cheaters': []

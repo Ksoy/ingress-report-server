@@ -11,7 +11,7 @@ from django.shortcuts import redirect#, render
 from django.template import loader
 
 from .render import render
-from .models import Agent, Cheater, Report, ReportCheater, ReportFile, ReportRecord
+from .models import Cheater, Report, ReportCheater
 from .config import INAPPROPRIATE_MAP, REPORT_STATUS_LIST
 
 def home(request):
@@ -24,6 +24,10 @@ def cheaters(request):
 @login_required(login_url='/reports/v1/login')
 def reports(request):
     return render(request, 'report_list.html')
+
+@login_required(login_url='/reports/v1/login')
+def agents(request):
+    return render(request, 'agent_list.html')
 
 @login_required(login_url='/reports/v1/login')
 def users(request):
