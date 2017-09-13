@@ -177,6 +177,7 @@ def save_report(request):
         report.description = request.POST.get('description')
         report.inappropriate_type = request.POST.get('inappropriate_type')
         report.status = request.POST.get('status')
+        report.is_secret = (request.POST.get('is_secret') is not None)
 
         if len(request.FILES):
             report_file = ReportFile(upload_file=request.FILES['upload_file'])
