@@ -47,8 +47,12 @@ def cheater_list(request):
         report_cheaters = ReportCheater.objects.filter(cheater=cheater).order_by('report')
         times = 0
         for report_cheater in report_cheaters:
+            if report_cheater.report.is_secret:
+                continue
             record = ReportRecord.objects.filter(report_cheater=report_cheater)
             times += len(record)
+        if times == 0:
+            continue
         cheater_data = {
             'id': cheater.id,
             'name': cheater.name,
