@@ -21,12 +21,11 @@ urlpatterns = [
     url(r'^v1/manage/agent/(?P<a_id>[0-9]*)$', views.agent_manage, name='agent_manage_page'),
     url(r'^v1/manage/report/(?P<r_id>[0-9]*)$', views.report_manage, name='report_manage_page'),
 
-
     url(r'^v1/api/user_list$', api.user_list, name='user_list'),
     url(r'^v1/api/agent_list$', api.agent_list, name='agent_list'),
     url(r'^v1/api/cheater_list$', api.cheater_list, name='cheater_list'),
     url(r'^v1/api/report_list$', api.report_list, name='report_list'),
-    url(r'^v1/api/report_list/(?P<user>[^/]+)$', api.agent_report_list, name='agent_report_list'),
+    url(r'^v1/api/report_list/(?P<user>[^/]+)/(?P<token>[^/]*)$', api.agent_report_list, name='agent_report_list'),
 
     url(r'^v1/api/record/(?P<agent_name>[^/]+)/(?P<report_id>[0-9]+)/(?P<cheater_name>[a-zA-Z0-9]+)$', api.record, name='record'),
     url(r'^v1/api/saveagent$', api.save_agent, name='save_agent'),

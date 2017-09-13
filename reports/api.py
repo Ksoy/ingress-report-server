@@ -93,7 +93,7 @@ def report_list(request):
 	
     return HttpResponse(json.dumps(data))
 
-def agent_report_list(request, user):
+def agent_report_list(request, user, token=None):
     """Reutn all report information."""
     data = {
         'reports': []
