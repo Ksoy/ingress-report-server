@@ -32,6 +32,7 @@ def agent_list(request):
         agent_data = {
             'id': agent.id,
             'name': agent.name,
+            'token': agent.token,
             'is_reliable': agent.is_reliable,
         }
         data['agents'].append(agent_data)
@@ -99,11 +100,16 @@ def agent_report_list(request, user, token=None):
         'reports': []
     }
     agent = None
+    valid = False
     try:
         agent = Agent.objects.get(name=user)
+        if token and token == agent.token:
+            valid = True
     except:
         pass
     for report in Report.objects.filter(status='new'):
+        if report.is_secret and not valid:
+            continue
         filename = None
         if report.report_file:
             filename = report.report_file.upload_file.name

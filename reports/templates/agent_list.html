@@ -32,8 +32,9 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
     <thead>
       <tr>
         <th style="width:5%;">#</th>
-        <th style="width:70%;">name  <input style="font-weight:normal;line-height:normal;" placeholder="Search name" ng-model="$scope.search_agent.name"></th>
-        <th stVyle="width:25%;">reliable</th>
+        <th style="width:50%;">name  <input style="font-weight:normal;line-height:normal;" placeholder="Search name" ng-model="$scope.search_agent.name"></th>
+        <th style="width:20%;">token</th>
+        <th style="width:25%;">reliable</th>
       </tr>
     </thead>
     <tr ng-repeat="agent in filter_agents = (all_agents | filter: $scope.search_agent) | limitTo:10:10*(page-1)">
@@ -43,6 +44,7 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
           {% templatetag openvariable %}agent.name{% templatetag closevariable %}
         </a>
       </td>
+      <td>{% templatetag openvariable %}agent.token{% templatetag closevariable %}</td>
       <td>{% templatetag openvariable %}agent.is_reliable{% templatetag closevariable %}</td>
     </tr>
   </table>

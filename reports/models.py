@@ -2,8 +2,11 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from datetime import timedelta
-import uuid
+
 import os
+import random
+import string
+import uuid
 
 def user_file_name(instance, filename):
     instance.ori_name = filename
@@ -80,7 +83,14 @@ class ReportCheater(models.Model):
 
 class Agent(models.Model):
     name = models.CharField(max_length=200)    
+    token = models.CharField(max_length=5)
     is_reliable = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.token:
+            self.token = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
+        return super(Agent, self).save(*args, **kwargs)
 
 class ReportRecord(models.Model):
     agent = models.ForeignKey(Agent)
