@@ -47,7 +47,8 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
     </tr>
   </table>
   <uib-pagination class="pagination-sm pagination" total-items="filter_cheaters.length" ng-model="page"
-    previous-text="&lsaquo;" next-text="&rsaquo;" items-per-page=10></uib-pagination>
+    max-size="5" boundary-links="true" force-ellipses="true" previous-text="&lsaquo;" next-text="&rsaquo;" 
+    items-per-page=10></uib-pagination>
 
 </div>
 </div>
