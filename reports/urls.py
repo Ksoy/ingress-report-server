@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^v1/api/report_list$', api.report_list, name='report_list'),
     url(r'^v1/api/report_list/(?P<user>[^/]+)/(?P<token>[^/]*)$', api.agent_report_list, name='agent_report_list'),
 
-    url(r'^v1/api/record/(?P<agent_name>[^/]+)/(?P<report_id>[0-9]+)/(?P<cheater_name>[a-zA-Z0-9]+)$', api.record, name='record'),
+    url(r'^v1/api/record/(?P<agent_name>[^/]+)/(?P<report_id>[0-9]+)/(?P<cheater_name>[a-zA-Z0-9_]+)$', api.record, name='record'),
     url(r'^v1/api/saveagent$', api.save_agent, name='save_agent'),
     url(r'^v1/api/savereport$', api.save_report, name='save_report'),
     url(r'^v1/api/updatecheater$', api.update_cheater, name='update_cheater'),
