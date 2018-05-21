@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from django.contrib.auth.decorators import login_required
@@ -105,6 +106,7 @@ def agent_report_list(request, user, token=None):
     }
     agent = None
     valid = False
+    today = datetime.date.today()
     try:
         agent = Agent.objects.get(name=user)
         if token and token == agent.token:
@@ -113,6 +115,8 @@ def agent_report_list(request, user, token=None):
         pass
     for report in Report.objects.filter(status='new'):
         if report.is_secret and not valid:
+            continue
+        if report.expire_date < today:
             continue
         filename = None
         if report.report_file:
