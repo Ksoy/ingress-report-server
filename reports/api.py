@@ -106,17 +106,14 @@ def agent_report_list(request, user, token=None):
     }
     agent = None
     valid = False
-    today = datetime.date.today()
     try:
         agent = Agent.objects.get(name=user)
         if token and token == agent.token:
             valid = True
     except:
         pass
-    for report in Report.objects.filter(status='new'):
+    for report in Report.objects.filter(status='new', expire_date__gte=datetime.date.today()):
         if report.is_secret and not valid:
-            continue
-        if report.expire_date < today:
             continue
         filename = None
         if report.report_file:
