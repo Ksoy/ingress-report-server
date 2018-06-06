@@ -112,7 +112,7 @@ def agent_report_list(request, user, token=None):
             valid = True
     except:
         pass
-    for report in Report.objects.filter(status='new', expire_date__gte=datetime.date.today()):
+    for report in Report.objects.filter(status='new', expire_date__gte=datetime.date.today()).order_by('-id'):
         if report.is_secret and not valid:
             continue
         filename = None
