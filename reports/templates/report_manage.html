@@ -55,6 +55,11 @@
   </div>
 
   <div class="form-group">
+    <label for="expire_date">Expire date:</label>
+    <input type="date" name="expire_date" id="expire_date" style="line-height: inherit;" value="{{report.expire_date|date:'Y-m-d'}}"></input>
+  </div>
+
+  <div class="form-group">
     <input type="checkbox" id="is_secret" name="is_secret" value="true" {% if report.is_secret %}checked="checked"{% endif %}>
         <b>Secret Report.</b> (Only show for valid agent)
     </input>

@@ -75,17 +75,21 @@ def report_list(request):
         filename = None
         if report.report_file:
             filename = report.report_file.upload_file.name
-        report_data = {
-            'report_id': report.id,
-            'subject': report.subject,
-            'description': report.description,
-            'cheaters': [],
-            'inappropriate_type': INAPPROPRIATE_MAP[report.inappropriate_type],
-            'filename': filename,
-            'status': report.status,
-            'creator': report.creator.username,
-            'create_time': report.create_time.strftime("%Y-%m-%d %H:%M:%S"),
-        }
+        try:
+            report_data = {
+                'report_id': report.id,
+                'subject': report.subject,
+                'description': report.description,
+                'cheaters': [],
+                'inappropriate_type': INAPPROPRIATE_MAP[report.inappropriate_type],
+                'filename': filename,
+                'status': report.status,
+                'creator': report.creator.username,
+                'create_time': report.create_time.strftime("%Y-%m-%d %H:%M:%S"),
+                'expire_date': report.expire_date.strftime("%Y-%m-%d") if report.expire_date else None,
+            }
+        except Exception as e:
+            return HttpResponse(str(e))
         for report_cheater in ReportCheater.objects.filter(report=report):
             status = report_cheater.cheater.status
             cheater = {
@@ -189,6 +193,7 @@ def save_report(request):
         report.inappropriate_type = request.POST.get('inappropriate_type')
         report.status = request.POST.get('status')
         report.is_secret = (request.POST.get('is_secret') is not None)
+        report.expire_date = request.POST.get('expire_date')
 
         if len(request.FILES):
             report_file = ReportFile(upload_file=request.FILES['upload_file'])

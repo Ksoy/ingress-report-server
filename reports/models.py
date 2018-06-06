@@ -53,7 +53,8 @@ class Report(models.Model):
         ''' On save, update timestamps '''
         if not self.id:
             self.create_time = timezone.now()
-            self.expire_date = timezone.now() + timedelta(days=3)
+        if not self.expire_date:
+            self.expire_date = timezone.now() + timedelta(days=7)
         return super(Report, self).save(*args, **kwargs)
 
 class Cheater(models.Model):

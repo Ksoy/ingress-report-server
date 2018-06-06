@@ -131,6 +131,10 @@ ingressApp.controller('ingressController', function ingressController($scope, $h
             <td>{% templatetag openvariable %}report.create_time{% templatetag closevariable %}</td>
           </tr>
           <tr>
+            <td><label>Expire date:</label></td>
+            <td>{% templatetag openvariable %}report.expire_date{% templatetag closevariable %}</td>
+          </tr>
+          <tr>
             <td></td> 
             <td style="text-align:right;"><a href="{% url 'reports:report_manage_page' r_id='' %}{% templatetag openvariable %}report.report_id{% templatetag closevariable %}" class="btn btn-success">modify</a></td>
           </tr>
